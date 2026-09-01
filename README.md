@@ -4,23 +4,25 @@
 
 ---
 
-## 🌐 在线体验直达链接
+## 🌐 在线体验与手机扫码畅玩
 
-- 🖥️ **电脑端在线畅玩入口**：[https://Yuliyouyong.github.io/cat-gamehouse/](https://Yuliyouyong.github.io/cat-gamehouse/)
-- 📱 **手机端触屏畅玩入口**：[https://Yuliyouyong.github.io/cat-gamehouse/mobile/](https://Yuliyouyong.github.io/cat-gamehouse/mobile/)
+| 🖥️ 电脑端在线入口（宽屏大书） | 📱 手机端触屏入口（扫码即玩） |
+| :---: | :---: |
+| [👉 点此在电脑上畅玩](https://Yuliyouyong.github.io/cat-gamehouse/) | <img src=" assets/qrcode_mobile.png\ width=\150\ alt=\手机扫码即玩\ /><br><sub>📱 微信/相机扫一扫直达手机版</sub> |
+| https://Yuliyouyong.github.io/cat-gamehouse/ | https://Yuliyouyong.github.io/cat-gamehouse/mobile/ |
 
 ---
 
 ## 🌟 核心治愈特色
 
 - 🔮 **每日塔罗与心灵关怀**：翻开 3D 心灵塔罗牌与 22 张经典大阿卡纳手绘牌，静心感受属于你的温柔密语与每日能量关怀；
-- 📝 **心绪手账与水彩日记**：盖下 开心、治愈、想猫、平静等多色心情印章，随时记录今天的小小心情与悄悄话；
+- 📝 **心绪手账与水彩日记**：盖下开心、治愈、想猫、平静等多色心情印章，随时记录今天的小小心情与悄悄话；
 - 🐾 **灵猫抚育与亲昵羁绊**：喂食美味小鱼干提升幸福感与亲密度，白猫在身边漫步、打哈欠、与你对话互动；
 - 🎨 **莫兰迪粉绿手账美学**：莫兰迪草木绿（#708A66 / #A3B899）与复古豆沙粉（#D4A5A5 / #B57E7E），搭配温润和纸底色；
 - 🐱 **纯正原版手绘白猫**：紫色大蝴蝶结 + 珍珠中心 + 夸张长假睫毛 + 闪烁八角星眼 + 甜美腮红，100% 贯穿全套游戏；
 - 📱 **电脑与手机触屏双端适配**：
-  - **电脑端（PC）**：横向翻开大书，鼠标悬停微动、第一次点击翻开手账简介、第二次点击直达游戏；
-  - **手机端（Mobile）**：左右滑动手势（Touch Swipe）翻页、底部 7 房间触控横滑底栏、内置手账九宫格软键盘。
+ - **电脑端（PC）**：横向翻开大书，鼠标悬停微动、第一次点击翻开手账简介、第二次点击直达游戏，右上角常驻手机扫码卡片；
+ - **手机端（Mobile）**：左右滑动手势（Touch Swipe）翻页、底部 7 房间触控横滑底栏、内置手账九宫格软键盘。
 
 ---
 
