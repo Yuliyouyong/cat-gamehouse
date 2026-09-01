@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css" rel="stylesheet">
+<title>✨ 猫猫运势无限摇 · 手机触屏专版</title>
+<style>
+:root {
+  --bg: #FBF4F0;
+  --line: #7A665A;
+  --ink: #5E5252;
+  --pink-deep: #B57E7E;
+  --gold: #D4AF37;
+  --font-display: "ZCOOL KuaiLe", cursive, sans-serif;
+  --font-reading: "LXGW WenKai Screen", serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font-display);
+  background: radial-gradient(circle at 50% 30%, #FFF8F4 0%, #F3EAE4 100%);
+  color: var(--ink);
+  height: 100vh; height: 100dvh;
+  overflow: hidden;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 14px) 16px calc(env(safe-area-inset-bottom, 14px) + 12px);
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+.back-btn {
+  background: #FFFDF9;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 2px 2px 0 rgba(122,102,90,0.5);
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+.cat-stage {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 6px 12px rgba(122,102,90,0.18));
+}
+
+.card-3d {
+  width: 190px;
+  height: 290px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.34, 1.4, 0.64, 1);
+  box-shadow: 0 16px 36px rgba(122,102,90,0.22);
+  border-radius: 20px;
+}
+.card-3d.flipped { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute; inset: 0; border-radius: 20px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 3px solid var(--gold);
+}
+
+.card-back {
+  background: linear-gradient(145deg, #FAF2E6 0%, #F5E5CE 100%);
+  color: #B45309;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+  background: #FFFDF9;
+  color: var(--ink);
+  padding: 16px;
+  justify-content: space-between;
+}
+
+.bottom-panel {
+  display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 20;
+}
+
+.draw-btn {
+  width: 100%; max-width: 320px; height: 50px; border-radius: 999px;
+  background: linear-gradient(180deg, #FAF1F1, #E8D5D5);
+  border: 2px solid var(--line);
+  font-family: var(--font-display); font-size: 17px; font-weight: 900; color: #7D4A55;
+  box-shadow: 0 4px 0 var(--line); cursor: pointer;
+}
+.draw-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--line); }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="index.html">🏡 大厅</a>
+  <span style="font-size:17px;letter-spacing:1px;color:var(--pink-deep);">✨ 灵猫随心无限摇</span>
+  <span style="font-size:12px;color:var(--ink-light);">无限次</span>
+</div>
+
+<div class="stage">
+  <svg class="cat-stage" viewBox="0 0 110 120">
+    <ellipse cx="55" cy="74" rx="42" ry="38" fill="#FFFDF9" stroke="#7A665A" stroke-width="3.5"/>
+    <path d="M28,52 L38,18 L60,38 Z" fill="#FFFDF9" stroke="#7A665A" stroke-width="3.5"/>
+    <path d="M82,52 L72,18 L50,38 Z" fill="#FFFDF9" stroke="#7A665A" stroke-width="3.5"/>
+    <g transform="translate(55, 27)">
+      <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5"/>
+      <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5"/>
+      <circle r="5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+    </g>
+    <ellipse cx="40" cy="74" rx="9" ry="10" fill="#433B4A"/>
+    <ellipse cx="70" cy="74" rx="9" ry="10" fill="#433B4A"/>
+    <circle cx="43" cy="71" r="3" fill="#FFF"/>
+    <circle cx="73" cy="71" r="3" fill="#FFF"/>
+    <circle cx="26" cy="88" r="6" fill="#F0CDD5" opacity="0.65"/>
+    <circle cx="84" cy="88" r="6" fill="#F0CDD5" opacity="0.65"/>
+    <path d="M55,85 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+    <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none"/>
+  </svg>
+
+  <div class="card-3d" id="card3d">
+    <div class="card-face card-back">
+      <div style="font-size:42px;">✨</div>
+      <div style="font-size:14px;letter-spacing:3px;margin-top:8px;">随 心 摇 牌</div>
+    </div>
+    <div class="card-face card-front">
+      <div style="font-size:11px;color:#B57E7E;letter-spacing:2px;">✦ 今日絮语 ✦</div>
+      <div style="font-size:48px;" id="cardSym">🍃</div>
+      <div style="font-size:22px;color:#7D515D;" id="cardName">轻风</div>
+      <p style="font-family:var(--font-reading);font-size:13px;line-height:1.6;text-align:center;" id="cardDesc">
+        放下心中的小焦虑，像一阵微风轻抚树梢，自在舒展吧。
+      </p>
+      <div style="font-size:10px;color:#9E876F;">小 橘 守 护 · 随 心 随 意</div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-panel">
+  <div style="font-family:var(--font-reading);font-size:12px;color:var(--ink-light);">
+    📱 摇一摇手机即可翻牌，随时无限抽
+  </div>
+  <button class="draw-btn" id="drawBtn">摇动灵猫 · 翻牌！🐾</button>
+</div>
+
+<script>
+"use strict";
+
+const CARDS = [
+  { name: "轻风", sym: "🍃", desc: "放下心中的小纠结，像一阵轻风拂过水面，生活本就充满松弛感。" },
+  { name: "甜桃", sym: "🍑", desc: "今天可能会尝到一口甜甜的惊喜，或者遇到一个温暖的微笑哦！" },
+  { name: "阳光", sym: "🌻", desc: "不管外面天气如何，心里的向日葵永远为你盛开。做自己的太阳！" },
+  { name: "软糖", sym: "🍬", desc: "生活有点硬，但你很软糯。累了就去买一块喜欢的甜点犒劳自己。" },
+  { name: "暖炉", sym: "🔥", desc: "疲惫是暂时的，温暖是长久的。裹好小被子，享受今晚的宁静。" }
+];
+
+const card3d = document.getElementById("card3d");
+const drawBtn = document.getElementById("drawBtn");
+let isDrawn = false;
+
+function draw() {
+  if (navigator.vibrate) navigator.vibrate(15);
+  const c = CARDS[Math.floor(Math.random() * CARDS.length)];
+  document.getElementById("cardSym").textContent = c.sym;
+  document.getElementById("cardName").textContent = c.name;
+  document.getElementById("cardDesc").textContent = c.desc;
+
+  card3d.classList.toggle("flipped");
+}
+
+drawBtn.addEventListener("click", draw);
+
+/* 物理摇一摇 */
+let lastX = 0, lastY = 0, lastZ = 0, lastTime = 0;
+window.addEventListener("devicemotion", e => {
+  const curTime = Date.now();
+  if ((curTime - lastTime) > 200) {
+    const diffTime = curTime - lastTime;
+    lastTime = curTime;
+    const acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+
+    const speed = Math.abs(acc.x + acc.y + acc.z - lastX - lastY - lastZ) / diffTime * 10000;
+    if (speed > 800) draw();
+    lastX = acc.x; lastY = acc.y; lastZ = acc.z;
+  }
+});
+</script>
+</body>
+</html>

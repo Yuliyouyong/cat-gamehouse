@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<title>猫猫运势摇一摇 🔮</title>
+<style>
+:root{
+  --line:#8d7b70;          /* 手绘深棕描边 */
+  --pink:#eec2c9;          /* 低饱和粉 */
+  --pink-deep:#c98a95;
+  --green:#a9c5a1;         /* 低饱和绿 */
+  --green-deep:#7d9b75;
+  --purple:#b3a3d1;        /* 低饱和紫（牌背） */
+  --purple-deep:#8f7fb3;
+  --gold:#e8d58a;          /* 低饱和金 */
+  --ink:#6d5a52;           /* 暖棕文字 */
+  --paper:#fdf8f4;         /* 米白纸感 */
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:
+    radial-gradient(900px 640px at 15% -8%, rgba(169,197,161,.5), transparent 60%),
+    radial-gradient(900px 640px at 88% 12%, rgba(238,194,201,.55), transparent 60%),
+    linear-gradient(180deg,#fbf4f0,#f3e2df);
+  color:var(--ink);overflow:hidden;user-select:none;-webkit-user-select:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.scene{position:fixed;inset:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+/* 手绘背景涂鸦 */
+.doodle{position:absolute;pointer-events:none;opacity:.4}
+.doodle.ring{border:3px solid var(--green-deep);border-radius:50%}
+/* 标题 */
+header{text-align:center;position:relative;z-index:5}
+header h1{
+  font-size:31px;font-weight:900;letter-spacing:3px;color:var(--ink);
+  transform:rotate(-1.6deg);
+  text-shadow:3px 3px 0 #e2cfc8;
+}
+header .sub{
+  font-size:12.5px;color:var(--green-deep);letter-spacing:7px;font-weight:800;
+  margin-top:6px;transform:rotate(1deg)
+}
+/* 主体 */
+.main{display:flex;align-items:center;justify-content:center;gap:26px;position:relative;z-index:5}
+/* 猫猫 */
+.cat-side{display:flex;flex-direction:column;align-items:center;gap:10px;width:138px;flex-shrink:0}
+.cat-fig{
+  width:100px;height:auto;transform:rotate(-2deg);
+  filter:drop-shadow(4px 5px 0 rgba(141,123,112,.3))
+}
+.cat-fig .lash{stroke-linecap:round}
+.eye-star{transform-box:fill-box;transform-origin:center;animation:eyeTwinkle 1.7s ease-in-out infinite}
+@keyframes eyeTwinkle{
+  0%,100%{opacity:1;transform:scale(1) rotate(0)}
+  50%{opacity:.4;transform:scale(.6) rotate(45deg)}
+}
+.bubble{
+  position:relative;background:var(--paper);border:3px solid var(--line);
+  border-radius:20px 14px 20px 12px;padding:11px 14px;font-size:13px;line-height:1.55;
+  color:var(--ink);font-weight:700;min-height:60px;
+  box-shadow:4px 4px 0 rgba(141,123,112,.75);transform:rotate(.8deg)
+}
+.bubble::after{
+  content:"";position:absolute;left:22px;bottom:-11px;
+  border:8px solid transparent;border-top-color:var(--line);
+}
+.bubble::before{
+  content:"";position:absolute;left:22px;bottom:-6px;
+  border:6px solid transparent;border-top-color:var(--paper);
+  z-index:1
+}
+.bubble.bounce{animation:bounce .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes bounce{0%{transform:scale(.94) translateY(2px) rotate(.8deg)}60%{transform:scale(1.03)}100%{transform:scale(1) rotate(.8deg)}}
+/* 牌 3D */
+.card-3d{
+  width:200px;height:300px;perspective:1000px;cursor:pointer;position:relative;z-index:6;
+  transform:rotate(-1deg);transition:transform .25s;
+  filter:drop-shadow(6px 8px 0 rgba(141,123,112,.35))
+}
+.card-3d.drawing{transform:rotate(-1deg) scale(1.04)}
+.card-inner{
+  position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  transition:transform .85s cubic-bezier(.45,.05,.2,1)
+}
+.card-inner.flipped{transform:rotateY(180deg)}
+.card-face{
+  position:absolute;inset:0;border-radius:20px 16px 22px 14px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;
+  box-shadow:5px 5px 0 rgba(141,123,112,.8)
+}
+/* 牌背：紫底金星（手绘感） */
+.card-back{
+  background:linear-gradient(155deg,#c0b4da 0%,#b3a3d1 45%,#9d8cc0 100%);
+  border:4px solid var(--purple-deep);
+  display:flex;align-items:center;justify-content:center;
+}
+.card-back svg{width:74px;height:74px;transform:rotate(4deg);animation:starSway 3s ease-in-out infinite}
+@keyframes starSway{0%,100%{transform:rotate(2deg) scale(1)}50%{transform:rotate(6deg) scale(1.06)}}
+.card-back .corner{position:absolute;font-size:14px;color:rgba(232,213,138,.85);transform:rotate(8deg)}
+.card-back .c1{top:11px;left:14px}.card-back .c2{top:11px;right:14px;transform:rotate(-12deg)}
+.card-back .c3{bottom:11px;left:14px;transform:rotate(-10deg)}.card-back .c4{bottom:11px;right:14px;transform:rotate(12deg)}
+/* 牌正面 */
+.card-front{
+  transform:rotateY(180deg);background:linear-gradient(165deg,#fef9f2 0%,#faf1e6 55%,#f3e5d5 100%);
+  border:4px solid var(--line);color:var(--ink);
+  display:flex;flex-direction:column;padding:13px 12px 11px;
+}
+.f-top{display:flex;align-items:center;justify-content:space-between;font-size:9px;
+  letter-spacing:2px;font-weight:800;color:#a08a7a;transform:rotate(-.5deg)}
+.f-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.f-sym{font-size:46px;line-height:1;filter:grayscale(.18) saturate(.82) drop-shadow(3px 3px 0 rgba(141,123,112,.2));transform:rotate(2deg)}
+.f-name{
+  font-size:26px;font-weight:900;letter-spacing:4px;color:var(--green-deep);
+  transform:rotate(-1.2deg);text-shadow:2px 2px 0 #e2d3c8
+}
+.f-en{font-size:9.5px;font-weight:800;color:#a78f7d;letter-spacing:2px;transform:rotate(.8deg)}
+.f-text{
+  font-size:11.5px;line-height:1.7;font-weight:700;color:#7a655a;
+  background:#fdf6ee;border:2px dashed #c9b5a4;border-radius:12px 9px 13px 10px;
+  padding:8px 10px;min-height:60px;transform:rotate(-.6deg)
+}
+/* 按钮（手绘涂鸦感） */
+.btn{
+  border:3px solid var(--pink-deep);border-radius:999px 1000px 980px 1020px;
+  padding:13px 38px;font-size:17px;font-weight:900;letter-spacing:3px;
+  color:#7a4a55;cursor:pointer;
+  background:linear-gradient(180deg,#f5d3d8,#eec2c9);
+  box-shadow:5px 5px 0 #c98a95, 0 0 0 5px var(--paper);
+  transform:rotate(-1deg);transition:transform .08s;position:relative;z-index:5
+}
+.btn:active{transform:rotate(-1deg) translate(3px,3px);box-shadow:2px 2px 0 #c98a95}
+.note{font-size:11.5px;color:#a08a7a;font-weight:800;letter-spacing:2px;position:relative;z-index:5}
+/* 翻牌粒子 */
+.spark{
+  position:fixed;color:var(--gold);pointer-events:none;z-index:60;
+  animation:sparkFly .85s ease-out forwards;text-shadow:2px 2px 0 rgba(141,123,112,.35)
+}
+@keyframes sparkFly{
+  from{transform:translate(0,0) scale(1) rotate(0);opacity:1}
+  to{transform:translate(var(--dx),var(--dy)) scale(.15) rotate(140deg);opacity:0}
+}
+/* 手机适配 */
+@media (max-width:560px){
+  .main{gap:12px}
+  .card-3d{width:148px;height:222px}
+  .cat-side{width:104px}
+  .cat-fig{width:74px}
+  .bubble{font-size:12px;min-height:66px}
+  .f-sym{font-size:36px}.f-name{font-size:20px}
+  .f-text{font-size:10.5px;padding:7px}
+  header h1{font-size:24px}
+}
+/* 返回大厅手账木牌 */
+.back-home-badge{
+  position:fixed;top:14px;left:14px;z-index:60;
+  background:var(--paper);border:2.5px solid var(--line);border-radius:999px;
+  padding:6px 14px;font-size:13.5px;font-weight:900;color:var(--ink);
+  text-decoration:none;display:inline-flex;align-items:center;gap:5px;
+  box-shadow:3px 3px 0 rgba(141,123,112,.6);transition:transform .12s, box-shadow .12s;
+}
+.back-home-badge:hover{transform:translateY(-2px);box-shadow:4px 4px 0 rgba(141,123,112,.75);}
+.back-home-badge:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(141,123,112,.6);}
+</style>
+</head>
+<body>
+<a class="back-home-badge" href="index.html" title="返回猫猫游戏屋大厅">🏡 大厅</a>
+<div class="scene">
+  <header>
+    <h1>🔮 猫猫运势摇一摇</h1>
+    <div class="sub">喵 喵 塔 罗</div>
+  </header>
+
+  <div class="main">
+    <!-- 猫猫 -->
+    <div class="cat-side">
+      <div class="bubble" id="bubble">喵~ 摇一摇，看看今天的运势吧！</div>
+      <svg class="cat-fig" viewBox="0 0 110 165" aria-label="白色猫猫">
+        <!-- 尾巴（白描边双层） -->
+        <path d="M90,134 C110,132 114,118 110,104 C107,95 98,92 92,99" fill="none" stroke="#8d7b70" stroke-width="7" stroke-linecap="round"/>
+        <path d="M90,134 C110,132 114,118 110,104 C107,95 98,92 92,99" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- 身体 -->
+        <ellipse cx="55" cy="130" rx="36" ry="29" fill="#fff" stroke="#8d7b70" stroke-width="4"/>
+        <!-- 前爪 -->
+        <ellipse cx="38" cy="150" rx="10" ry="7.5" fill="#fff" stroke="#8d7b70" stroke-width="4"/>
+        <ellipse cx="72" cy="150" rx="10" ry="7.5" fill="#fff" stroke="#8d7b70" stroke-width="4"/>
+        <path d="M38,146 v5.5 M34.5,148.5 l2.5,4 M41.5,148.5 l-2.5,4" stroke="#d9b483" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M72,146 v5.5 M68.5,148.5 l2.5,4 M75.5,148.5 l-2.5,4" stroke="#d9b483" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- 头 -->
+        <circle cx="55" cy="70" r="38" fill="#fff" stroke="#8d7b70" stroke-width="4"/>
+        <!-- 耳朵 -->
+        <path d="M30,50 L40,18 L62,36 Z" fill="#fff" stroke="#8d7b70" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M80,50 L70,18 L48,36 Z" fill="#fff" stroke="#8d7b70" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M36,44 L42,26 L56,37 Z" fill="#f3c2cd"/>
+        <path d="M74,44 L68,26 L54,37 Z" fill="#f3c2cd"/>
+        <!-- 紫色蝴蝶结 -->
+        <g transform="translate(55,27)">
+          <path d="M-2,0 C-14,-7 -25,-2 -25,6 C-25,13 -12,9 -2,0" fill="#b3a3d1" stroke="#8f7fb3" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M2,0 C14,-7 25,-2 25,6 C25,13 12,9 2,0" fill="#b3a3d1" stroke="#8f7fb3" stroke-width="3" stroke-linejoin="round"/>
+          <circle r="5" fill="#8f7fb3"/>
+        </g>
+        <!-- 大眼睛 -->
+        <circle cx="40" cy="70" r="10.5" fill="#4a3a52"/>
+        <circle cx="70" cy="70" r="10.5" fill="#4a3a52"/>
+        <circle cx="43" cy="66.5" r="3.6" fill="#fff"/>
+        <circle cx="73" cy="66.5" r="3.6" fill="#fff"/>
+        <circle cx="40" cy="74" r="1.8" fill="#fff" opacity=".85"/>
+        <circle cx="70" cy="74" r="1.8" fill="#fff" opacity=".85"/>
+        <!-- 闪闪星光（眼睛里的星星，闪烁动画） -->
+        <path class="eye-star" d="M40,70 l2,3.6 l3.6,.6 l-2.7,2.5 l.8,3.6 l-3.3,-1.8 l-3.3,1.8 l.8,-3.6 l-2.7,-2.5 l3.6,-.6 Z" fill="#ffd76e"/>
+        <path class="eye-star" d="M70,70 l2,3.6 l3.6,.6 l-2.7,2.5 l.8,3.6 l-3.3,-1.8 l-3.3,1.8 l.8,-3.6 l-2.7,-2.5 l3.6,-.6 Z" fill="#ffd76e"/>
+        <!-- 夸张假睫毛 -->
+        <path class="lash" d="M31,65 L25,55 M40,61 L40,49 M49,65 L55,55" stroke="#8d7b70" stroke-width="3"/>
+        <path class="lash" d="M79,65 L85,55 M70,61 L70,49 M61,65 L55,55" stroke="#8d7b70" stroke-width="3"/>
+        <!-- 腮红 -->
+        <circle cx="27" cy="86" r="7" fill="#eec2c9" opacity=".65"/>
+        <circle cx="83" cy="86" r="7" fill="#eec2c9" opacity=".65"/>
+        <!-- 鼻子 + 嘴 -->
+        <path d="M55,83 l4.5,4.5 l-9,0 Z" fill="#f0a8b5"/>
+        <path d="M55,87.5 v3" stroke="#8d7b70" stroke-width="3" stroke-linecap="round"/>
+        <path d="M48,89.5 q7,6 14,0" stroke="#8d7b70" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- 胡须 -->
+        <g stroke="#8d7b70" stroke-width="2" stroke-linecap="round" opacity=".65">
+          <path d="M17,84 L4,80"/><path d="M17,91 L3,91"/><path d="M18,98 L5,102"/>
+          <path d="M93,84 L106,80"/><path d="M93,91 L107,91"/><path d="M92,98 L105,102"/>
+        </g>
+      </svg>
+    </div>
+    <!-- 塔罗牌 -->
+    <div class="card-3d" id="card3d">
+      <div class="card-inner" id="cardInner">
+        <div class="card-face card-back">
+          <svg viewBox="0 0 100 100">
+            <path d="M50,8 L60,38 L92,38 L66,58 L76,90 L50,70 L24,90 L34,58 L8,38 L40,38 Z"
+                  fill="rgba(232,213,138,.45)" stroke="#8a76b5" stroke-width="4"
+                  stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+          <span class="corner c1">✦</span><span class="corner c2">✦</span>
+          <span class="corner c3">✦</span><span class="corner c4">✦</span>
+        </div>
+        <div class="card-face card-front">
+          <div class="f-top"><span>✦</span>喵喵塔罗<span>✦</span></div>
+          <div class="f-body">
+            <div class="f-sym" id="fSym">🃏</div>
+            <div class="f-name" id="fName">命运</div>
+            <div class="f-en" id="fEn">The Fortune</div>
+          </div>
+          <div class="f-text" id="fText">🐱 本喵觉得，今天会有好运降临！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="shakeBtn">摇一摇运势 🔮</button>
+  <div class="note">想摇几次摇几次 · 本喵免费算命喵</div>
+</div>
+
+<script>
+"use strict";
+/* ================= 牌数据 ================= */
+const CARDS = [
+  { name:"愚者",   en:"The Fool",          sym:"🃏", text:"今天适合大胆尝试新事物，像本喵追逗猫棒一样，冲就完事了！" },
+  { name:"魔术师", en:"The Magician",      sym:"✨", text:"今天你能量满格，想做的事都能搞定，记得像本喵一样自信舔爪！" },
+  { name:"女祭司", en:"The High Priestess",sym:"🌙", text:"今天适合静下心来听听内心的声音，就像本喵安静盯窗外那样。" },
+  { name:"命运之轮", en:"Wheel of Fortune",sym:"🎡", text:"好运正在转动，抓住机会喵，今天会有惊喜悄悄上门！" },
+  { name:"星星",   en:"The Star",          sym:"⭐", text:"希望的星光正照着你，许个愿吧，本喵帮你盯着小鱼干。" },
+  { name:"月亮",   en:"The Moon",          sym:"🌕", text:"今天情绪有点起伏也没关系，睡一觉，明天太阳照样升起！" },
+];
+
+/* ================= 元素 ================= */
+const $ = id => document.getElementById(id);
+const card3d = $("card3d"), cardInner = $("cardInner"), shakeBtn = $("shakeBtn");
+const bubble = $("bubble"), fSym = $("fSym"), fName = $("fName"), fEn = $("fEn"), fText = $("fText");
+
+/* ================= 音效（合成） ================= */
+let AC = null;
+function ensureAC(){ if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+function blip(freq, dur, vol, type){
+  try{
+    const a = ensureAC();
+    if(a.state === "suspended") a.resume();
+    const t = a.currentTime;
+    const o = a.createOscillator(); o.type = type || "sine";
+    o.frequency.setValueAtTime(freq, t);
+    const g = a.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g).connect(a.destination);
+    o.start(t); o.stop(t+dur+0.02);
+  }catch(e){}
+}
+function drawSound(){ blip(392,.16,.3); setTimeout(()=>blip(523,.18,.32),110); setTimeout(()=>blip(659,.3,.3,"triangle"),230); }
+
+/* ================= 抽牌 ================= */
+let busy = false, drawn = false;
+
+function say(html){
+  bubble.innerHTML = html;
+  bubble.classList.remove("bounce"); void bubble.offsetWidth;
+  bubble.classList.add("bounce");
+}
+function showCard(i){
+  const c = CARDS[i];
+  fSym.textContent = c.sym;
+  fName.textContent = c.name;
+  fEn.textContent = c.en;
+  fText.innerHTML = `🐱 本喵觉得，${c.text}`;
+}
+function sparkBurst(){
+  const r = card3d.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  for(let i=0;i<14;i++){
+    const s = document.createElement("span");
+    s.className = "spark"; s.textContent = "✦";
+    s.style.left = cx+"px"; s.style.top = cy+"px";
+    s.style.fontSize = (10 + Math.random()*13)+"px";
+    const a = Math.random()*6.283, d = 46 + Math.random()*120;
+    s.style.setProperty("--dx", Math.cos(a)*d+"px");
+    s.style.setProperty("--dy", Math.sin(a)*d+"px");
+    s.style.animationDelay = (Math.random()*0.1)+"s";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 1300);
+  }
+}
+function drawCard(){
+  if(busy) return;
+  busy = true;
+  const idx = Math.floor(Math.random()*CARDS.length);
+  // 先翻回背面（有动画）
+  cardInner.classList.remove("flipped");
+  card3d.classList.add("drawing");
+  drawSound();
+  say("喵！让本喵看看你的运势……");
+  setTimeout(()=>{
+    showCard(idx);
+    cardInner.classList.add("flipped");
+    card3d.classList.remove("drawing");
+    sparkBurst();
+    say("这就是你的运势喵！<br>想再摇随时点～");
+    busy = false;
+  }, 450);
+  drawn = true;
+  shakeBtn.textContent = "再摇一次 🔮";
+}
+
+/* ================= 事件 ================= */
+shakeBtn.addEventListener("click", drawCard);
+card3d.addEventListener("click", drawCard);
+
+/* ================= 手绘背景涂鸦 ================= */
+(function(){
+  // 歪歪扭扭的圈圈
+  for(let i=0;i<4;i++){
+    const d = document.createElement("span");
+    d.className = "doodle ring";
+    const size = 30 + Math.random()*60;
+    d.style.width = size+"px"; d.style.height = size+"px";
+    d.style.left = (Math.random()*100)+"vw";
+    d.style.top = (Math.random()*100)+"vh";
+    d.style.transform = `rotate(${Math.random()*30-15}deg)`;
+    document.body.appendChild(d);
+  }
+  // 低饱和小花草
+  const plants = ["🌼","🌿","🌸","🐾"];
+  for(let i=0;i<9;i++){
+    const s = document.createElement("span");
+    s.className = "doodle"; s.textContent = plants[i%plants.length];
+    s.style.left = (Math.random()*100)+"vw";
+    s.style.top = (Math.random()*100)+"vh";
+    s.style.fontSize = (14 + Math.random()*16)+"px";
+    s.style.filter = "grayscale(.35) saturate(.75)";
+    s.style.transform = `rotate(${Math.random()*60-30}deg)`;
+    document.body.appendChild(s);
+  }
+})();
+
+/* ================= 启动 ================= */
+say("喵~ 摇一摇，看看今天的运势吧！");
+</script>
+</body>
+</html>

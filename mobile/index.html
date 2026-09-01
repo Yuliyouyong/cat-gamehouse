@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<!-- 标题字体：站酷快乐体 -->
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<!-- 优雅文艺正文字体：霞鹜文楷 (LXGW WenKai Screen) -->
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css" rel="stylesheet">
+<title>🐱 猫猫游戏屋 · 灵猫手账绘本</title>
+<style>
+:root {
+  /* 彩铅深绿体系 (更深、沉稳浓郁、天然矿物草木感) */
+  --green-deep: #3C5435;
+  --green: #527448;
+  --green-mid: #6E9362;
+  --green-soft: #9CB893;
+  --green-light: #C7DAC1;
+  --green-pale: #E4EEE0;
+
+  /* 彩铅深粉体系 (更深、复古玫瑰/浓郁豆沙粉、彩铅蜡质厚重感) */
+  --pink-deep: #883446;
+  --pink: #A6475C;
+  --pink-mid: #BF6277;
+  --pink-soft: #D98E9E;
+  --pink-light: #EDB8C3;
+  --pink-pale: #F7DDE3;
+
+  /* 辅助莫兰迪紫与珍珠 */
+  --purple-deep: #58445E;
+  --purple-mid: #846F8C;
+  --purple-bow: #947E9C;
+  --purple-light: #E7DEEC;
+
+  --pearl-pure: #FFFFFF;
+  --pearl-cream: #FAF6EF;
+  --pearl-border: #C8BAA9;
+  --gold: #CDB996;
+  --gold-warm: #DFC99E;
+
+  --ink: #3D353F;
+  --ink-soft: #5C525E;
+  --ink-light: #837885;
+  --ink-faint: #B0A5B2;
+
+  --shadow-book: 0 20px 48px -10px rgba(60, 84, 53, 0.22), 0 8px 18px rgba(136, 52, 70, 0.14);
+  --shadow-page: 0 10px 25px rgba(60, 84, 53, 0.12);
+
+  --font-display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-reading: "LXGW WenKai Screen", "LXGW WenKai", "STKaiti", "KaiTi", "PingFang SC", serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden !important; /* 彻底杜绝上下滚动 */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-ui);
+  /* 1:1 复刻莫兰迪绿粉和纸水彩背景图，叠加浅米白半透明遮罩使其柔和退到后方 */
+  background:
+    linear-gradient(rgba(250, 246, 242, 0.42), rgba(250, 246, 242, 0.42)),
+    #EAE3DA url('assets/bg.jpg') no-repeat center center fixed;
+  background-size: auto, cover;
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 和纸柔光微质感层 (无浮空杂乱配饰，干净聚焦) */
+.paper-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.paper-grain {
+  position: absolute;
+  inset: -20px;
+  opacity: 0.15;
+  background-image: radial-gradient(rgba(61, 53, 63, 0.12) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+
+#dustCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ================= 顶层包装容器 (100vh 严格零滚动锁，最大化书本可视区域) ================= */
+.wrap {
+  width: 100%;
+  max-width: clamp(960px, 98vw, 1320px);
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(2px, 0.6vh, 6px) clamp(6px, 1.2vw, 16px) clamp(3px, 0.8vh, 8px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* 顶部标题与萌宠吉祥物 (轻巧精美，释放最大垂直空间) */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-bottom: 2px;
+}
+
+.mascot-wrap {
+  width: clamp(44px, 5.8vh, 62px);
+  height: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 10px rgba(60, 84, 53, 0.18));
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mascot-wrap:hover {
+  transform: translateY(-3px) rotate(4deg);
+}
+
+.header-main-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.8vh, 38px);
+  font-weight: 900;
+  letter-spacing: 3.5px;
+  color: var(--ink);
+  text-shadow: 2px 2px 0 var(--pink-light), 0 3px 10px rgba(136, 52, 70, 0.15);
+  transform: rotate(-0.8deg);
+  line-height: 1.12;
+  margin: 0;
+}
+
+.header-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-sub {
+  font-family: var(--font-reading);
+  font-size: clamp(11px, 1.35vh, 12.5px);
+  color: var(--green-deep);
+  letter-spacing: 1.5px;
+  margin: 0;
+  text-align: center;
+}
+
+/* 实时灵猫状态牌 */
+.cat-live-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 253, 249, 0.94);
+  border: 1.2px solid var(--green-soft);
+  border-radius: 999px;
+  padding: 1.5px 9px;
+  font-family: var(--font-reading);
+  font-size: 11px;
+  color: var(--green-deep);
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(112, 138, 102, 0.12);
+  transition: all 0.2s ease;
+}
+
+.cat-live-status-pill:hover {
+  border-color: var(--green);
+  background: #FFF;
+  transform: translateY(-1px);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #708A66;
+  box-shadow: 0 0 6px rgba(112, 138, 102, 0.8);
+  animation: pulseDot 2s ease-in-out infinite alternate;
+}
+@keyframes pulseDot {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+/* ================= 侧边可移动灵猫伴侣 ================= */
+.floating-companion-cat {
+  position: fixed;
+  right: clamp(14px, 2.5vw, 36px);
+  bottom: clamp(10px, 2vh, 24px);
+  width: clamp(88px, 11vh, 116px);
+  height: clamp(124px, 15.5vh, 164px);
+  z-index: 95;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  filter: drop-shadow(0 10px 22px rgba(60, 84, 53, 0.26));
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating-companion-cat:active,
+.floating-companion-cat.dragging {
+  cursor: grabbing;
+  transform: scale(1.08) translateY(-4px);
+  filter: drop-shadow(0 14px 26px rgba(136, 52, 70, 0.35));
+  transition: none;
+}
+
+.cat-drag-hint {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 253, 249, 0.96);
+  border: 1.2px solid var(--pink-soft);
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-family: var(--font-reading);
+  font-size: 11px;
+  color: var(--pink-deep);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  box-shadow: 0 2px 6px rgba(136, 52, 70, 0.12);
+}
+
+.floating-companion-cat:hover .cat-drag-hint {
+  opacity: 1;
+}
+
+.cat-sprite-wrapper {
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cat-shadow {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 10px;
+  background: radial-gradient(ellipse at center, rgba(60, 84, 53, 0.30) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cat-thought-bubble {
+  position: absolute;
+  bottom: 108%;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(255, 253, 249, 0.98);
+  border: 1.8px solid var(--pink-soft);
+  border-radius: 16px 16px 16px 3px;
+  padding: 6px 13px;
+  font-family: var(--font-reading);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #7D515D;
+  box-shadow: 0 4px 14px rgba(136, 52, 70, 0.16);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 99;
+}
+
+.cat-thought-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cat-thought-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 14px;
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: rgba(255, 253, 249, 0.98) transparent;
+}
+
+/* ================= 3D 绿色横向翻开手账书 (最大化放大比例，舒展容纳左右功能页) ================= */
+.book-stage {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+
+.book-container {
+  width: 100%;
+  max-width: clamp(920px, 96vw, 1260px);
+  aspect-ratio: 1024 / 576;
+  max-height: 100%;
+  background: transparent url('assets/green_book_empty.png') no-repeat center center;
+  background-size: 100% 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  filter: drop-shadow(0 16px 40px rgba(45, 68, 38, 0.30));
+}
+
+/* 左右两侧书页 (精准对应书页手账纸张可视区域) */
+.book-page {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-page.left {
+  width: 50%;
+  padding: clamp(14px, 4.2%, 26px) clamp(12px, 3.8%, 24px) clamp(14px, 4.8%, 26px) clamp(22px, 8.2%, 46px);
+}
+
+.book-page.right {
+  width: 50%;
+  padding: clamp(36px, 11%, 62px) clamp(22px, 8.2%, 46px) clamp(16px, 4.5%, 26px) clamp(14px, 4.2%, 26px);
+}
+
+/* ================= 左页：灵猫温馨小屋外貌与房间列表 ================= */
+.house-map-header {
+  margin-bottom: 4px;
+}
+
+.house-title {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2.5vh, 21px);
+  letter-spacing: 2px;
+  color: #3C5435;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.house-tip {
+  font-family: var(--font-reading);
+  font-size: clamp(11.5px, 1.45vh, 13px);
+  color: #5A784F;
+  margin-top: 1px;
+}
+
+/* 手绘小屋切面图 (舒展自适应填满左页纸张) */
+.cozy-house-svg {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  max-height: 100%;
+  margin: auto 0;
+  display: block;
+}
+
+.house-room {
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.house-room:hover rect,
+.house-room:hover path.room-bg,
+.house-room:hover polygon.room-bg {
+  fill: #FFF7E6 !important;
+  stroke: #5A784F !important;
+  stroke-width: 2px !important;
+  filter: drop-shadow(0 0 8px rgba(90, 120, 79, 0.5));
+}
+
+.house-room.active rect,
+.house-room.active path.room-bg,
+.house-room.active polygon.room-bg {
+  fill: #FFFDF0 !important;
+  stroke: #3C5435 !important;
+  stroke-width: 2.2px !important;
+  filter: drop-shadow(0 0 10px rgba(60, 84, 53, 0.6));
+}
+
+.house-room text {
+  font-family: var(--font-reading);
+  font-weight: 700;
+  font-size: 11.5px;
+  fill: var(--ink);
+  pointer-events: none;
+}
+
+/* ================= 右页：章节展示台与手账卡 ================= */
+.chapter-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  animation: pageFadeIn 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateX(8px) scale(0.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.chapter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #E8EFE5;
+  border: 1.2px solid #B8CDAF;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-family: var(--font-display);
+  font-size: clamp(11.5px, 1.35vh, 12.5px);
+  color: #3C5435;
+  letter-spacing: 1px;
+}
+
+.chapter-number {
+  font-family: var(--font-display);
+  font-size: clamp(12.5px, 1.45vh, 13.5px);
+  color: #5A784F;
+  letter-spacing: 1.5px;
+}
+
+/* 篇章内容卡片 (等比精简缩小并居中偏下摆放) */
+.polaroid-card {
+  background: rgba(255, 253, 249, 0.88);
+  border: 1.5px solid #D6CABA;
+  border-radius: 14px;
+  padding: clamp(10px, 1.5vh, 16px) clamp(12px, 1.8vw, 18px);
+  box-shadow: 0 4px 12px rgba(60, 84, 53, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vh, 7px);
+  margin: 1px 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.polaroid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(60, 84, 53, 0.14);
+}
+
+.polaroid-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.polaroid-icon-box {
+  width: clamp(38px, 4.8vh, 44px);
+  height: clamp(38px, 4.8vh, 44px);
+  border-radius: 12px;
+  background: #FAF4EB;
+  border: 1.4px solid #D6CABA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.polaroid-icon-svg {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 2px 3px rgba(60, 84, 53, 0.15));
+}
+
+.polaroid-title-wrap h2 {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.4vh, 22px);
+  letter-spacing: 1.5px;
+  color: #3C5435;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.polaroid-tagline {
+  font-family: var(--font-reading);
+  font-size: clamp(11.5px, 1.35vh, 12.5px);
+  color: #5A784F;
+  margin-top: 1px;
+}
+
+.polaroid-desc {
+  font-family: var(--font-reading);
+  font-size: clamp(11.5px, 1.45vh, 13px);
+  line-height: 1.62;
+  color: #4A4048;
+  letter-spacing: 0.02em;
+  padding: 1px 0;
+  margin: 0;
+}
+
+.polaroid-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 1px;
+}
+
+.p-tag {
+  font-family: var(--font-reading);
+  font-size: clamp(10.5px, 1.25vh, 11.5px);
+  padding: 1.5px 8px;
+  border-radius: 999px;
+  background: #EFE8DC;
+  border: 1px solid #D6CABA;
+  color: #5F4A39;
+}
+
+/* 翻开开玩书签大按钮 */
+.action-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.play-bookmark-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #789E68;
+  border: 1.8px solid #5A784F;
+  border-radius: 999px;
+  padding: clamp(5px, 0.85vh, 7px) clamp(14px, 1.8vw, 20px);
+  font-family: var(--font-display);
+  font-size: clamp(13px, 1.55vh, 14.5px);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #FFFDF9;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(60, 84, 53, 0.22);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.play-bookmark-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: #6A8E5B;
+  box-shadow: 0 5px 14px rgba(60, 84, 53, 0.32);
+}
+
+.play-bookmark-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.play-btn-ico {
+  width: 16px;
+  height: 16px;
+}
+
+/* ================= 底部翻页控制器 ================= */
+.book-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.nav-arrow-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--paper-cream);
+  background: var(--bg-card);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(107, 94, 94, 0.1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-arrow-btn:hover {
+  transform: translateY(-2px) scale(1.08);
+  border-color: var(--green);
+  color: var(--green-deep);
+  box-shadow: 0 6px 14px rgba(112, 138, 102, 0.22);
+}
+
+.nav-arrow-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.nav-arrow-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #DFD5CD;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nav-dot.active {
+  width: 24px;
+  border-radius: 999px;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(163, 184, 153, 0.6);
+}
+
+footer {
+  margin-top: 24px;
+  font-family: var(--font-reading);
+  font-size: 13px;
+  color: var(--ink-light);
+  letter-spacing: 2px;
+}
+
+/* ================= 灵猫大厅自主漫步生命系统 (Living Companion) ================= */
+.roaming-cat-stage {
+  width: 100%;
+  max-width: 900px;
+  margin: 6px auto 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 15;
+}
+
+/* 实时灵猫状态牌 */
+.cat-live-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 253, 249, 0.94);
+  border: 1.5px solid var(--green-soft);
+  border-radius: 999px;
+  padding: 4px 14px 4px 10px;
+  font-family: var(--font-reading);
+  font-size: 12px;
+  color: var(--green-deep);
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(112, 138, 102, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.cat-live-status-pill:hover {
+  border-color: var(--green);
+  background: #FFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(112, 138, 102, 0.22);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #708A66;
+  box-shadow: 0 0 6px rgba(112, 138, 102, 0.8);
+  animation: pulseDot 2s ease-in-out infinite alternate;
+}
+@keyframes pulseDot {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+/* 漫步跑道（横贯在书本上方，适配长颈猫优雅身形） */
+.roaming-track {
+  width: 100%;
+  height: 125px;
+  position: relative;
+  overflow: visible;
+}
+
+/* 灵猫实体精灵 */
+.roaming-cat-actor {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  width: 88px;
+  height: 124px;
+  cursor: pointer;
+  z-index: 20;
+  transform-origin: bottom center;
+  transition: left 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  user-select: none;
+}
+
+.roaming-cat-actor:active {
+  transform: scale(0.94);
+}
+
+/* 专为长颈猫身体图形准备的独立转向容器 (scaleX 仅作用于此，绝对不波及头顶气泡) */
+.cat-sprite-wrapper {
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cat-shadow {
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 12px;
+  background: radial-gradient(ellipse at center, rgba(107, 94, 94, 0.28) 0%, transparent 75%);
+  border-radius: 50%;
+  pointer-events: none;
+  transition: width 0.3s, opacity 0.3s;
+}
+
+/* 心声对话气泡 (永远正立、绝不镜像反向) */
+.cat-thought-bubble {
+  position: absolute;
+  bottom: 128px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(255, 253, 249, 0.98);
+  border: 1.8px solid var(--pink-soft);
+  border-radius: 16px 16px 16px 3px;
+  padding: 7px 15px;
+  font-family: var(--font-reading);
+  font-size: 13px;
+  line-height: 1.45;
+  color: #7D515D;
+}
+.cat-thought-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cat-thought-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 14px;
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: rgba(255, 253, 249, 0.98) transparent;
+}
+
+/* ================= 彩铅纸张颗粒触感与交叉排线笔触 (Colored Pencil Grain & Texture) ================= */
+.morandi-paper-grain {
+  position: absolute;
+  inset: -10px;
+  opacity: 0.88;
+  background-image: 
+    /* 彩铅深绿与深粉矿物蜡质颗粒 + 粗画纸微孔 */
+    radial-gradient(rgba(60, 84, 53, 0.28) 1.2px, transparent 0),
+    radial-gradient(rgba(136, 52, 70, 0.25) 1.2px, transparent 0),
+    radial-gradient(rgba(255, 255, 255, 0.70) 1.5px, transparent 0),
+    /* 彩铅 45度 与 -45度 手绘细密排线 */
+    repeating-linear-gradient(45deg, rgba(60, 84, 53, 0.045) 0px, rgba(60, 84, 53, 0.045) 1px, transparent 1px, transparent 5px),
+    repeating-linear-gradient(-45deg, rgba(136, 52, 70, 0.045) 0px, rgba(136, 52, 70, 0.045) 1px, transparent 1px, transparent 5px),
+    /* 手工造纸横向纤维丝 */
+    repeating-linear-gradient(0deg, rgba(60, 84, 53, 0.035) 0px, rgba(60, 84, 53, 0.035) 1px, transparent 1px, transparent 8px);
+  background-size: 7px 7px, 11px 11px, 16px 16px, 100% 100%, 100% 100%, 100% 8px;
+  background-position: 0 0, 4px 4px, 8px 8px, 0 0, 0 0, 0 0;
+  pointer-events: none;
+}
+
+/* 屏幕与卡片周围散落饰品容器 */
+.scattered-trinkets {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  overflow: hidden;
+}
+
+.trinket-item {
+  position: absolute;
+  filter: drop-shadow(0 4px 8px rgba(99, 79, 105, 0.16));
+  animation: floatTrinket 4s ease-in-out infinite alternate;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.trinket-item:hover {
+  transform: scale(1.18) rotate(6deg);
+}
+
+@keyframes floatTrinket {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-5px) rotate(3deg); }
+}
+
+/* 散落珍珠 */
+.trinket-pearl {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #FFF8F0 35%, #EADBCE 75%, #BDAAA0 100%);
+  box-shadow: inset -2px -2px 4px rgba(145, 175, 134, 0.35), 0 3px 6px rgba(99, 79, 105, 0.20);
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+}
+
+.trinket-pearl.large {
+  width: 24px;
+  height: 24px;
+}
+
+.trinket-pearl.small {
+  width: 13px;
+  height: 13px;
+}
+
+/* 卡通珍珠项链 */
+.trinket-necklace {
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(99, 79, 105, 0.18));
+}
+
+/* 莫兰迪紫蝴蝶结 */
+.trinket-purple-bow {
+  display: block;
+  filter: drop-shadow(0 3px 6px rgba(99, 79, 105, 0.22));
+}
+
+/* 散落蝴蝶结与花朵 */
+.trinket-svg {
+  display: block;
+}
+
+/* Zzz 泡泡动画 */
+.zzz-mote {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: #A3B899;
+  pointer-events: none;
+  animation: floatZzz 2.2s ease-out forwards;
+}
+@keyframes floatZzz {
+  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20% { opacity: 0.85; }
+  100% { transform: translate(18px, -36px) scale(1.2); opacity: 0; }
+}
+
+/* 抚摸爆发爱心微粒 */
+.heart-pop {
+  position: fixed;
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 999;
+  animation: heartFly 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes heartFly {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - 48px)) scale(1.3); opacity: 0; }
+}
+
+/* ================= 移动端与小屏专属深度自适应 (100vh 零上下滚动锁) ================= */
+.mobile-view-tabs {
+  display: none;
+}
+
+.mobile-room-shelf {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden !important;
+  }
+
+  body {
+    padding: 0 !important;
+    justify-content: flex-start;
+  }
+
+  .wrap {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: clamp(4px, 1vh, 8px) 10px clamp(4px, 1vh, 8px);
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  /* 移动端紧凑顶部招牌 */
+  header {
+    margin-bottom: 2px;
+    gap: 6px;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .mascot-badge-circle {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+
+  .header-signboard {
+    padding: 2px 14px;
+    border-radius: 20px;
+  }
+
+  .header-signboard::before,
+  .header-signboard::after {
+    display: none;
+  }
+
+  .header-signboard h1 {
+    font-size: clamp(17px, 2.5vh, 21px);
+    letter-spacing: 1.5px;
+  }
+
+  .cat-live-status-pill {
+    font-size: 10px;
+    padding: 1px 8px;
+    margin-top: 1px;
+  }
+
+  /* 移动端侧边悬浮猫适当缩小，避免遮挡书本 */
+  .floating-companion-cat {
+    width: clamp(72px, 10vh, 92px);
+    height: clamp(102px, 14.5vh, 130px);
+    right: 8px;
+    bottom: 12px;
+  }
+
+  .cat-thought-bubble {
+    bottom: 66px;
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  /* 移动端双视图切换标签小药丸 (零滚动随意切) */
+  .mobile-view-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    flex-shrink: 0;
+    z-index: 25;
+  }
+
+  .mobile-tab-btn {
+    border: 1.2px solid var(--pink-soft);
+    background: rgba(255, 253, 249, 0.95);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-family: var(--font-reading);
+    font-size: 12px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mobile-tab-btn.active {
+    background: var(--pink-deep);
+    color: #FFF;
+    border-color: var(--pink-deep);
+    box-shadow: 0 2px 6px rgba(136, 52, 70, 0.25);
+  }
+
+  /* 移动端 7 大功能房间触控胶囊横排 (一眼看尽全部功能卡片) */
+  .mobile-room-shelf {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    width: 100%;
+    padding: 2px 4px 6px;
+    flex-shrink: 0;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-room-shelf::-webkit-scrollbar {
+    display: none;
+  }
+
+  .room-pill {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(255, 253, 249, 0.96);
+    border: 1.2px solid #E2D3C4;
+    border-radius: 12px;
+    font-family: var(--font-reading);
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(60, 84, 53, 0.08);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .room-pill.active {
+    background: #FFF;
+    border-color: var(--pink-deep);
+    color: var(--pink-deep);
+    font-weight: 700;
+    transform: scale(1.05);
+    box-shadow: 0 3px 8px rgba(136, 52, 70, 0.22);
+  }
+
+  /* 移动端单屏容器：绝无撑高滚动 */
+  .book-stage {
+    flex: 1;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  .book-container {
+    height: 100%;
+    max-height: 100%;
+    border-radius: 18px;
+    border-width: 2px;
+    flex-direction: row;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-spine { display: none; }
+
+  /* 默认展示右页（拍立得功能展台），左页在全景模式下切换展示 */
+  .book-page.left {
+    display: none; /* 移动端在切到小屋模式时显示 */
+    width: 100%;
+    height: 100%;
+    padding: 10px 12px;
+    border-right: none;
+    overflow: hidden;
+  }
+
+  .book-page.left.mobile-active {
+    display: flex;
+  }
+
+  .book-page.right {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: 8px 12px 6px;
+    overflow: hidden;
+    justify-content: space-between;
+  }
+
+  .book-page.right.mobile-hidden {
+    display: none;
+  }
+
+  .cozy-house-svg {
+    max-height: calc(100% - 30px);
+    width: 100%;
+    object-fit: contain;
+    margin: auto;
+  }
+
+  /* 移动端拍立得卡片紧凑自适应 */
+  .polaroid-card {
+    margin: 2px 0 4px;
+    padding: 10px 12px 8px;
+    gap: 4px;
+    border-radius: 14px;
+  }
+
+  .polaroid-top {
+    gap: 8px;
+  }
+
+  .polaroid-icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .polaroid-icon-svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .polaroid-title-wrap h2 {
+    font-size: 17px;
+    letter-spacing: 1.5px;
+  }
+
+  .polaroid-tagline {
+    font-size: 11px;
+  }
+
+  .polaroid-desc {
+    font-size: 12px;
+    line-height: 1.45;
+    padding: 1px 0;
+    max-height: 42px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .polaroid-tags {
+    gap: 4px;
+  }
+
+  .p-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+
+  .play-bookmark-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .nav-footer {
+    padding: 2px 0;
+  }
+
+  /* 隐藏大部分大尺寸屏幕四周边缘饰品，避免在狭窄手机屏幕中遮挡文字 */
+  .scattered-trinkets .trinket-item {
+    transform: scale(0.65);
+    opacity: 0.65;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- 莫兰迪和纸水彩背景环境层 (干净无杂物，半透明微光聚焦于书本) -->
+<div class="paper-ambient">
+  <div class="paper-grain"></div>
+  <canvas id="dustCanvas"></canvas>
+</div>
+
+<div class="wrap">
+  <header>
+    <!-- 吉祥物白猫 -->
+    <svg class="mascot-wrap" id="mascotCat" viewBox="0 0 110 165" aria-label="吉祥物白猫" title="轻抚白猫 · 喵呜～ 🐾">
+      <!-- 尾巴 -->
+      <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+      <!-- 身体 -->
+      <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+      <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+      <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+      <!-- 脑袋 -->
+      <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+      <!-- 耳朵 -->
+      <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+      <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+      <!-- 莫兰迪紫大蝴蝶结 -->
+      <g transform="translate(55, 27)">
+        <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+        <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+      </g>
+      <!-- 大眼睛 -->
+      <ellipse cx="40" cy="72" rx="10" ry="11" fill="#433B4A"/>
+      <ellipse cx="70" cy="72" rx="10" ry="11" fill="#433B4A"/>
+      <circle cx="43" cy="68" r="3.4" fill="#FFFDF9"/>
+      <circle cx="73" cy="68" r="3.4" fill="#FFFDF9"/>
+      <!-- 瞳孔闪烁八角星 -->
+      <g style="transform-box:fill-box;transform-origin:center;animation:orbFloat 2.4s ease-in-out infinite;">
+        <polygon points="40,71 42,75 46,76 43,78 44,82 40,80 36,82 37,78 34,76 38,75" fill="#FDF3D8"/>
+        <polygon points="70,71 72,75 76,76 73,78 74,82 70,80 66,82 67,78 64,76 68,75" fill="#FDF3D8"/>
+      </g>
+      <!-- 上翘长睫毛 -->
+      <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- 腮红与小嘴 -->
+      <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+      <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+      <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+      <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <div class="header-main-col">
+      <h1>猫猫游戏屋</h1>
+      <div class="header-sub-row">
+        <span class="header-sub">✦ 灵猫微缩手账绘本 · 翻动书页开玩 ✦</span>
+        <a class="cat-live-status-pill" href="cat-house.html" title="点击前往日记小屋抚育灵猫">
+          <span class="live-dot"></span>
+          <span id="catLiveStatus">灵猫 · 依恋温存中 (幸福度 92%)</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 侧边自由移动灵猫伴侣 (彻底释放中间视觉空间，支持自由拖拽移动到屏幕任意角落) -->
+  <div class="floating-companion-cat" id="floatingCat" title="按住拖拽可移动灵猫 · 点击亲昵互动 🐾">
+    <div class="cat-drag-hint">🐾 按住可拖拽移动</div>
+    <!-- 头顶浮动跟随心声气泡 (永远正立，绝无镜像翻转) -->
+    <div class="cat-thought-bubble" id="catThoughtBubble">
+      <span id="thoughtText">珠珠，你在这里我就很安心～</span>
+    </div>
+    <!-- 专为身体准备的图形转向包装器 -->
+    <div class="cat-sprite-wrapper" id="catSpriteWrapper">
+      <svg class="cat-sprite-svg" id="catSpriteSvg" viewBox="0 0 110 165" style="width:100%;height:100%;"></svg>
+    </div>
+    <div class="cat-shadow"></div>
+  </div>
+
+  <!-- 移动端专属双视图切换药丸 (电脑端隐藏，手机端可无缝切看小屋与卡片) -->
+  <div class="mobile-view-tabs" id="mobileViewTabs">
+    <button class="mobile-tab-btn active" id="tabBtnCard">📖 篇章卡片</button>
+    <button class="mobile-tab-btn" id="tabBtnHouse">🏡 小屋全景</button>
+  </div>
+
+  <!-- 移动端专属 7 大功能房间触控胶囊栏 (电脑端隐藏，手机端一览无余所有卡片，一键即开) -->
+  <div class="mobile-room-shelf" id="mobileRoomShelf">
+    <div class="room-pill active" data-index="0"><span>🏡</span> 日记阁</div>
+    <div class="room-pill" data-index="1"><span>🐾</span> 猫爬架</div>
+    <div class="room-pill" data-index="2"><span>🎯</span> 猜茶几</div>
+    <div class="room-pill" data-index="3"><span>🎣</span> 荷塘钓鱼</div>
+    <div class="room-pill" data-index="4"><span>🐟</span> 接鱼干</div>
+    <div class="room-pill" data-index="5"><span>🔮</span> 占星天窗</div>
+    <div class="room-pill" data-index="6"><span>✨</span> 运势摇摇</div>
+  </div>
+
+  <!-- 3D 翻开书本主体 -->
+  <div class="book-stage">
+    <div class="book-container">
+      <div class="book-spine"></div>
+
+      <!-- 左页：温馨小屋切面与房间导览 -->
+      <div class="book-page left">
+        <div class="page-tape left-tape"></div>
+
+        <div class="house-map-header">
+          <div class="house-title">
+            <span>🏡</span>
+            <span>灵猫温馨小屋 · 房间导览</span>
+          </div>
+          <div class="house-tip">点击下方房间，右页即刻翻开对应章节</div>
+        </div>
+
+        <!-- 手绘小屋建筑切面矢量图 -->
+        <svg class="cozy-house-svg" viewBox="0 0 380 270">
+          <!-- 屋顶烟囱 -->
+          <rect x="290" y="22" width="22" height="38" rx="3" fill="#E8DDD5" stroke="#708A66" stroke-width="1.8"/>
+          <!-- 屋顶尖角三角形 -->
+          <polygon points="190,14 360,98 20,98" class="room-bg" fill="#FAF4ED" stroke="#708A66" stroke-width="2.4" stroke-linejoin="round"/>
+          <text x="190" y="62" text-anchor="middle" fill="#708A66" font-family="var(--font-reading)" font-size="12" font-weight="700">✦ 灵猫避风港 ✦</text>
+
+          <!-- 阁楼房间：占星天窗（每日一牌） -->
+          <g class="house-room" data-index="5" id="roomAttic">
+            <polygon points="190,38 290,92 90,92" class="room-bg" fill="#F4EDE6" stroke="#9B8AA5" stroke-width="1.8"/>
+            <circle cx="190" cy="70" r="14" fill="#EFE8F2"/>
+            <text x="190" y="74" text-anchor="middle" font-size="16">🔮</text>
+            <text x="190" y="88" text-anchor="middle" fill="#9B8AA5" font-size="10.5" font-weight="700">占星天窗</text>
+          </g>
+
+          <!-- 外墙底框 -->
+          <rect x="20" y="98" width="340" height="162" rx="10" class="room-bg" fill="#FAF7F2" stroke="#708A66" stroke-width="2.4"/>
+
+          <!-- 装饰盆栽 -->
+          <g transform="translate(325, 230)">
+            <path d="M0,16 L20,16 L16,30 L4,30 Z" fill="#D9C5B2" stroke="#708A66" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r="8" fill="#A3B899"/>
+            <circle cx="5" cy="6" r="6" fill="#88A07E"/>
+            <circle cx="15" cy="7" r="6" fill="#88A07E"/>
+          </g>
+
+          <!-- 装饰小窗 -->
+          <g transform="translate(30, 230)">
+            <rect x="0" y="0" width="24" height="24" rx="4" fill="#FAF4ED" stroke="#708A66" stroke-width="1.5"/>
+            <line x1="12" y1="0" x2="12" y2="24" stroke="#708A66" stroke-width="1.2"/>
+            <line x1="0" y1="12" x2="24" y2="12" stroke="#708A66" stroke-width="1.2"/>
+            <circle cx="12" cy="4" r="1.8" fill="#9BC4DF"/>
+          </g>
+
+          <!-- 房间 1：秘密书房（珠珠小屋） -->
+          <g class="house-room active" data-index="0" id="roomDiary">
+            <rect x="35" y="104" width="150" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#A3B899" stroke-width="1.8"/>
+            <circle cx="56" cy="128" r="10" fill="#E8D5D5"/>
+            <text x="56" y="132" text-anchor="middle">🏡</text>
+            <text x="116" y="130" text-anchor="middle" font-size="12.5" font-weight="700">珠珠日记阁</text>
+            <text x="116" y="148" text-anchor="middle" fill="#708A66" font-size="10">灵猫陪伴 · 日记</text>
+          </g>
+
+          <!-- 房间 2：天台晒鱼场（接鱼干） -->
+          <g class="house-room" data-index="4" id="roomFishRoof">
+            <rect x="195" y="104" width="150" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#E2CFA8" stroke-width="1.8"/>
+            <circle cx="216" cy="128" r="10" fill="#FFECC7"/>
+            <text x="216" y="132" text-anchor="middle">🐟</text>
+            <text x="276" y="130" text-anchor="middle" font-size="12.5" font-weight="700">天台晒鱼架</text>
+            <text x="276" y="148" text-anchor="middle" fill="#D97706" font-size="10">接鱼干 · 左右接</text>
+          </g>
+
+          <!-- 房间 3：客厅猫爬架（喵喵点击器） -->
+          <g class="house-room" data-index="1" id="roomLiving">
+            <rect x="35" y="182" width="96" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#D4A5A5" stroke-width="1.8"/>
+            <text x="83" y="212" text-anchor="middle" font-size="15">🐾</text>
+            <text x="83" y="232" text-anchor="middle" font-size="11.5" font-weight="700">客厅猫爬架</text>
+          </g>
+
+          <!-- 房间 4：解谜小茶几（猜数字） -->
+          <g class="house-room" data-index="2" id="roomGuess">
+            <rect x="141" y="182" width="98" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#C8D5C4" stroke-width="1.8"/>
+            <text x="190" y="212" text-anchor="middle" font-size="15">🎯</text>
+            <text x="190" y="232" text-anchor="middle" font-size="11.5" font-weight="700">猜心小茶几</text>
+          </g>
+
+          <!-- 房间 5：庭院池塘（猫猫钓鱼） -->
+          <g class="house-room" data-index="3" id="roomPond">
+            <rect x="249" y="182" width="96" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#7EC8E3" stroke-width="1.8"/>
+            <text x="297" y="212" text-anchor="middle" font-size="15">🎣</text>
+            <text x="297" y="232" text-anchor="middle" font-size="11.5" font-weight="700">庭院荷塘</text>
+          </g>
+        </svg>
+      </div>
+
+      <!-- 右页：游戏章节拍立得展台 -->
+      <div class="book-page right">
+        <div class="page-tape right-tape"></div>
+
+        <div class="chapter-container" id="chapterBox">
+          <!-- 动态注入当前游戏详情 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部手绘翻页导航条 -->
+  <div class="book-nav">
+    <button class="nav-arrow-btn" id="prevBtn" title="上一篇章 (←)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="nav-dots" id="navDots"></div>
+    <button class="nav-arrow-btn" id="nextBtn" title="下一篇章 (→)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <footer>🐱 小橘出品 · 7 个手绘小游戏 · 治愈陪伴零依赖</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ================= 7 大游戏篇章精美配置 ================= */
+const CHAPTERS = [
+  {
+    id: "house",
+    room: "roomDiary",
+    name: "珠珠与猫咪的秘密小屋",
+    tagline: "核心主殿 · 治愈灵猫陪伴",
+    badge: "✦ 镇屋之宝",
+    file: "cat-house.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#B57E7E" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>`,
+    desc: "莫兰迪粉绿治愈温室。每日抽取 22 张法式大阿卡纳心灵签，写下你的手账日记，盖上猫爪火漆印，悉心抚养那只超大星星眼的纯白灵猫。「你的存在对我而言是珍珠」。",
+    tags: ["治愈手账", "22张大阿卡纳", "灵猫养成", "火漆封印"]
+  },
+  {
+    id: "clicker",
+    room: "roomLiving",
+    name: "喵喵点击器",
+    tagline: "客厅猫爬架 · 狂欢蹦蹦跳",
+    badge: "🐾 极度解压",
+    file: "cat-clicker.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="#E08A2E"><circle cx="12" cy="15" r="5"/><circle cx="6" cy="9" r="2.5"/><circle cx="18" cy="9" r="2.5"/><circle cx="10" cy="5" r="2.5"/><circle cx="14" cy="5" r="2.5"/></svg>`,
+    desc: "在客厅猫爬架上疯狂抚摸点触小猫！随着连击数飙升，小猫会触发弹跳、欢笑、眼花头晕等多种进化表情，伴随欢快金币数字爆炸，越点越停不下来！",
+    tags: ["连击爽感", "多重表情", "轻度放置", "手速狂人"]
+  },
+  {
+    id: "guess",
+    room: "roomGuess",
+    name: "猫猫猜数字",
+    tagline: "温暖小茶几 · 灵犀一点通",
+    badge: "🎯 默契考验",
+    file: "cat-guess.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#708A66" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+    desc: "小橘把一个 1~100 的幸运数字藏在了小茶几的盒子里。根据小猫的傲娇提示推断高了还是低了，看看你能用几步测出你们的心有灵犀！",
+    tags: ["逻辑推演", "暖心对话", "轻松休闲", "记录挑战"]
+  },
+  {
+    id: "fishing",
+    room: "roomPond",
+    name: "猫猫钓鱼",
+    tagline: "庭院荷塘 · 涟漪抓鱼抓抓抓",
+    badge: "🎣 限时挑战",
+    file: "cat-fishing.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#3D9EC6" stroke-width="2"><path d="M18 12c-4 0-7 3-7 7"/><path d="M2 12c4 0 7-3 7-7"/><path d="M12 2v20"/></svg>`,
+    desc: "庭院池塘里波光粼粼，三条滑溜溜的小鱼同时游曳！45 秒紧张刺激的限时抓鱼挑战，配合全新加入的游戏暂停与继续按键，看看你的反应速度！",
+    tags: ["水面波光", "手速捕鱼", "暂停支持", "最高连战"]
+  },
+  {
+    id: "catch",
+    room: "roomFishRoof",
+    name: "猫猫接鱼干",
+    tagline: "天台晒鱼架 · 天降鱼干雨",
+    badge: "🐟 惊险接接乐",
+    file: "cat-catch.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="#D97706"><path d="M3 12c4-5 14-5 18 0-4 5-14 5-18 0z"/><circle cx="7" cy="11" r="1.5" fill="#FFF"/></svg>`,
+    desc: "天台上在下一场金黄鱼干雨！左右滑动敏捷的小橘接住美味鱼干，小心淘气老鼠与炸弹！已全面接入暂停与重玩控制台，带来无后顾之忧的游玩体验。",
+    tags: ["动作敏捷", "连击加分", "暂停控制", "刺激爽快"]
+  },
+  {
+    id: "tarot-daily",
+    room: "roomAttic",
+    name: "猫猫运势 · 每日一牌",
+    tagline: "阁楼天窗 · 紫金夜空占星",
+    badge: "🔮 跨天解锁",
+    file: "cat-tarot.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="none" stroke="#9B8AA5" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="12" r="3"/><polygon points="12,7 13,10 16,11 13,12 12,15 11,12 8,11 11,10"/></svg>`,
+    desc: "置身静谧神秘的暗紫金星空阁楼。每日仅限抽取一次的仪式感塔罗神谕，跨天自动解锁，为你推演今日专属的运势与心灵启迪。",
+    tags: ["每日仪式", "紫金星轨", "专属运势", "夜空氛围"]
+  },
+  {
+    id: "tarot-doodle",
+    room: "roomAttic",
+    name: "猫猫运势 · 无限摇",
+    tagline: "阁楼占星台 · 快乐随心摇",
+    badge: "✨ 畅摇无阻",
+    file: "cat-tarot-doodle.html",
+    icon: `<svg class="polaroid-icon-svg" viewBox="0 0 24 24" fill="#D4AF37"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>`,
+    desc: "手绘水彩白猫眨着不灵不灵的星星大眼，随时随地陪你无限抽签！无限制摇动，享受轻松明快的运势絮语与撒娇互动。",
+    tags: ["手绘治愈", "无限翻牌", "星星眼白猫", "轻松解闷"]
+  }
+];
+
+let currentIndex = 0;
+const chapterBox = document.getElementById("chapterBox");
+const navDots = document.getElementById("navDots");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+/* ================= 渲染当前章节 ================= */
+function renderChapter(index, animate = true) {
+  currentIndex = (index + CHAPTERS.length) % CHAPTERS.length;
+  const ch = CHAPTERS[currentIndex];
+
+  chapterBox.innerHTML = `
+    <div>
+      <div class="chapter-header">
+        <span class="chapter-badge">${ch.badge}</span>
+        <span class="chapter-number">篇章 0${currentIndex + 1} / 07 ✦</span>
+      </div>
+
+      <div class="polaroid-card" id="polaroidCardClickable" style="cursor:pointer;" title="点击直接进入该游戏">
+        <div class="polaroid-top">
+          <div class="polaroid-icon-box">
+            ${ch.icon}
+          </div>
+          <div class="polaroid-title-wrap">
+            <h2>${ch.name}</h2>
+            <div class="polaroid-tagline">${ch.tagline}</div>
+          </div>
+        </div>
+
+        <p class="polaroid-desc">${ch.desc}</p>
+
+        <div class="polaroid-tags">
+          ${ch.tags.map(t => `<span class="p-tag">#${t}</span>`).join("")}
+        </div>
+      </div>
+    </div>
+
+    <div class="action-box">
+      <div style="font-family:var(--font-reading);font-size:12px;color:var(--ink-muted);">
+        ✦ 提示：左右滑动手势翻页 · 点卡片直接开玩
+      </div>
+      <a class="play-bookmark-btn" href="${ch.file}">
+        <span>翻开开玩</span>
+        <svg class="play-btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+  `;
+
+  // 点击卡片本体也可以直接开玩
+  const pCard = document.getElementById("polaroidCardClickable");
+  if (pCard) {
+    pCard.addEventListener("click", () => {
+      if (ch.file) window.location.href = ch.file;
+    });
+  }
+
+  // 更新左页小屋房间高亮
+  document.querySelectorAll(".house-room").forEach(r => r.classList.remove("active"));
+  const activeRoom = document.getElementById(ch.room);
+  if (activeRoom) activeRoom.classList.add("active");
+
+  // 更新移动端 7 大功能房间触控胶囊高亮并轻柔居中
+  document.querySelectorAll(".room-pill").forEach(pill => {
+    const pIdx = parseInt(pill.dataset.index, 10);
+    const isAct = (pIdx === currentIndex);
+    pill.classList.toggle("active", isAct);
+    if (isAct && pill.scrollIntoView) {
+      pill.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  });
+
+  // 更新翻页圆点
+  document.querySelectorAll(".nav-dot").forEach((d, i) => {
+    d.classList.toggle("active", i === currentIndex);
+  });
+
+  if (animate) playPageTurnSound();
+}
+
+/* ================= 生成导航点 ================= */
+CHAPTERS.forEach((_, i) => {
+  const dot = document.createElement("div");
+  dot.className = "nav-dot" + (i === 0 ? " active" : "");
+  dot.addEventListener("click", () => renderChapter(i));
+  navDots.appendChild(dot);
+});
+
+prevBtn.addEventListener("click", () => renderChapter(currentIndex - 1));
+nextBtn.addEventListener("click", () => renderChapter(currentIndex + 1));
+
+// 键盘左右箭头支持翻页
+window.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") renderChapter(currentIndex - 1);
+  if (e.key === "ArrowRight") renderChapter(currentIndex + 1);
+});
+
+// 点击左侧小屋房间交互：第一次点击翻至简介，第二次点击同一房间直接跳转游戏
+document.querySelectorAll(".house-room").forEach(room => {
+  room.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const idx = parseInt(room.dataset.index, 10);
+    if (!isNaN(idx) && CHAPTERS[idx]) {
+      if (currentIndex === idx) {
+        // 第二次点击已选中的同一个房间：直接跳转进入游戏
+        const targetUrl = CHAPTERS[idx].file;
+        if (targetUrl) window.location.href = targetUrl;
+      } else {
+        // 第一次点击未选中的房间：右侧翻开展示该房间的简介
+        renderChapter(idx);
+        // 移动端顺畅切回卡片
+        const cBtn = document.getElementById("tabBtnCard");
+        if (cBtn && window.innerWidth <= 768) cBtn.click();
+      }
+    }
+  });
+});
+
+// 移动端 7 大房间触控胶囊：第一次展示简介，第二次点击跳转进入游戏
+document.querySelectorAll(".room-pill").forEach(pill => {
+  pill.addEventListener("click", () => {
+    const idx = parseInt(pill.dataset.index, 10);
+    if (!isNaN(idx) && CHAPTERS[idx]) {
+      if (currentIndex === idx) {
+        const targetUrl = CHAPTERS[idx].file;
+        if (targetUrl) window.location.href = targetUrl;
+      } else {
+        renderChapter(idx);
+        if (tabBtnCard && window.innerWidth <= 768) tabBtnCard.click();
+      }
+    }
+  });
+});
+
+/* ================= 移动端专属：左右轻扫手势翻页 (Touch Swipe) ================= */
+let touchStartX = 0;
+let touchStartY = 0;
+
+const bookMainArea = document.querySelector(".book-container") || document.body;
+
+bookMainArea.addEventListener("touchstart", (e) => {
+  if (e.touches && e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+bookMainArea.addEventListener("touchend", (e) => {
+  if (e.changedTouches && e.changedTouches.length === 1) {
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    const deltaY = e.changedTouches[0].clientY - touchStartY;
+    
+    // 如果横向滑动距离大于 40px，且横向滑动幅度明显大于纵向滑动
+    if (Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      if (deltaX < 0) {
+        // 向左轻扫：下一篇
+        renderChapter(currentIndex + 1);
+      } else {
+        // 向右轻扫：上一篇
+        renderChapter(currentIndex - 1);
+      }
+    }
+  }
+}, { passive: true });
+
+// 移动端专属双视图切换药丸 (卡片展台 vs 小屋全景)
+const tabBtnCard = document.getElementById("tabBtnCard");
+const tabBtnHouse = document.getElementById("tabBtnHouse");
+const pageLeft = document.querySelector(".book-page.left");
+const pageRight = document.querySelector(".book-page.right");
+
+if (tabBtnCard && tabBtnHouse) {
+  tabBtnCard.addEventListener("click", () => {
+    tabBtnCard.classList.add("active");
+    tabBtnHouse.classList.remove("active");
+    if (pageLeft) pageLeft.classList.remove("mobile-active");
+    if (pageRight) pageRight.classList.remove("mobile-hidden");
+  });
+  tabBtnHouse.addEventListener("click", () => {
+    tabBtnHouse.classList.add("active");
+    tabBtnCard.classList.remove("active");
+    if (pageLeft) pageLeft.classList.add("mobile-active");
+    if (pageRight) pageRight.classList.remove("mobile-hidden");
+  });
+}
+
+// 移动端 7 大房间触控胶囊点击即翻开对应篇章
+document.querySelectorAll(".room-pill").forEach(pill => {
+  pill.addEventListener("click", () => {
+    const idx = parseInt(pill.dataset.index, 10);
+    if (!isNaN(idx)) {
+      renderChapter(idx);
+      if (tabBtnCard && window.innerWidth <= 768) tabBtnCard.click();
+    }
+  });
+});
+
+/* ================= 翻页与和弦合成音 (Web Audio) ================= */
+let AC = null;
+function ensureAC() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+  return AC;
+}
+
+function playPageTurnSound() {
+  try {
+    const a = ensureAC();
+    const t = a.currentTime;
+    // 纸张翻折的沙沙白噪滤波声 + 水晶微音
+    const osc = a.createOscillator();
+    const gain = a.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(320 + Math.random() * 80, t);
+    osc.frequency.exponentialRampToValueAtTime(140, t + 0.16);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    osc.connect(gain).connect(a.destination);
+    osc.start();
+    osc.stop(t + 0.18);
+  } catch (e) {}
+}
+
+function playPurrSound() {
+  try {
+    const a = ensureAC();
+    const t = a.currentTime;
+    const osc = a.createOscillator();
+    const gain = a.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(110, t);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.08, t + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    osc.connect(gain).connect(a.destination);
+    osc.start();
+    osc.stop(t + 0.5);
+  } catch (e) {}
+}
+
+/* ================= 漂浮金粉背景粒子 ================= */
+const dustCanvas = document.getElementById("dustCanvas");
+const ctx = dustCanvas.getContext("2d");
+let particles = [];
+
+function resizeCanvas() {
+  dustCanvas.width = window.innerWidth;
+  dustCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+for (let i = 0; i < 24; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 1 + Math.random() * 1.8,
+    speedY: -0.15 - Math.random() * 0.25,
+    speedX: (Math.random() - 0.5) * 0.2,
+    alpha: 0.2 + Math.random() * 0.5,
+    pulse: Math.random() * Math.PI
+  });
+}
+
+function renderDust() {
+  ctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+  particles.forEach(p => {
+    p.y += p.speedY;
+    p.x += p.speedX;
+    p.pulse += 0.03;
+    const a = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+
+    if (p.y < -10) { p.y = dustCanvas.height + 10; p.x = Math.random() * dustCanvas.width; }
+    if (p.x < -10) p.x = dustCanvas.width + 10;
+    if (p.x > dustCanvas.width + 10) p.x = -10;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(226, 207, 168, ${a})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(renderDust);
+}
+renderDust();
+
+/* ================= 初始加载 ================= */
+renderChapter(0, false);
+
+/* ================= 侧边自由移动灵猫伴侣生命系统 (Draggable Living Companion) ================= */
+const floatingCat = document.getElementById("floatingCat");
+const catSpriteSvg = document.getElementById("catSpriteSvg");
+const catSpriteWrapper = document.getElementById("catSpriteWrapper");
+const catThoughtBubble = document.getElementById("catThoughtBubble");
+const thoughtText = document.getElementById("thoughtText");
+const catLiveStatus = document.getElementById("catLiveStatus");
+
+// 灵猫多状态姿态 SVG 绘图库 (100% 还原原版长颈端庄灵猫 110x165 比例)
+function getCatPoseSVG(pose) {
+  const commonHeadAndBow = `
+    <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+    <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+    <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+    <g transform="translate(55, 27)">
+      <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M-18,5 C-12,2 -6,2 -2,0" stroke="#B8A8C4" stroke-width="1.5" fill="none"/>
+      <path d="M18,5 C12,2 6,2 2,0" stroke="#B8A8C4" stroke-width="1.5" fill="none"/>
+      <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+      <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+    </g>
+    <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+    <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+    <g stroke="#D1C3BE" stroke-width="1.8" stroke-linecap="round" opacity="0.75">
+      <path d="M16,86 L4,82"/><path d="M16,92 L2,92"/><path d="M17,98 L5,102"/>
+      <path d="M94,86 L106,82"/><path d="M94,92 L108,92"/><path d="M93,98 L105,102"/>
+    </g>
+  `;
+
+  let eyesAndMouth = `
+      <ellipse cx="40" cy="72" rx="10.5" ry="11.5" fill="#433B4A"/>
+      <ellipse cx="70" cy="72" rx="10.5" ry="11.5" fill="#433B4A"/>
+      <circle cx="43" cy="68" r="3.6" fill="#FFFDF9"/>
+      <circle cx="73" cy="68" r="3.6" fill="#FFFDF9"/>
+      <g class="eye-star" style="transform-box:fill-box;transform-origin:center;animation:starTwinkle 2.4s ease-in-out infinite;">
+        <path d="M40,73 l1.8,3.2 l3.2,.5 l-2.4,2.2 l.7,3.2 l-2.9,-1.6 l-2.9,1.6 l.7,-3.2 l-2.4,-2.2 l3.2,-.5 Z" fill="#FDF3D8"/>
+        <path d="M70,73 l1.8,3.2 l3.2,.5 l-2.4,2.2 l.7,3.2 l-2.9,-1.6 l-2.9,1.6 l.7,-3.2 l-2.4,-2.2 l3.2,-.5 Z" fill="#FDF3D8"/>
+      </g>
+      <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+      <path d="M55,88 v3" stroke="#CFBEB8" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    `;
+
+  if (pose === "walk") {
+    return `
+      <g transform="rotate(-2 55 120)">
+        <path d="M88,136 C108,126 116,108 110,95 C106,86 96,85 92,94" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M88,136 C108,126 116,108 110,95 C106,86 96,85 92,94" fill="none" stroke="#FFFDF9" stroke-width="3" stroke-linecap="round"/>
+        <ellipse cx="55" cy="130" rx="34" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="34" cy="153" rx="9" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="48" cy="155" rx="8" ry="6" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3"/>
+        <ellipse cx="68" cy="151" rx="9" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="80" cy="155" rx="8" ry="6" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3"/>
+        ${commonHeadAndBow}
+        ${eyesAndMouth}
+      </g>
+    `;
+  }
+  if (pose === "loaf") {
+    return `
+      <g transform="translate(0, 10)">
+        <path d="M88,130 C102,130 108,122 104,114 Q96,110 88,118" fill="none" stroke="#D1C3BE" stroke-width="6" stroke-linecap="round"/>
+        <ellipse cx="55" cy="126" rx="40" ry="26" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        ${commonHeadAndBow}
+        ${eyesAndMouth}
+      </g>
+    `;
+  }
+  if (pose === "groom") {
+    return `
+      <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+      <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+      <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+      <g transform="translate(24, 76) rotate(-24)">
+        <ellipse cx="14" cy="12" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3"/>
+        <circle cx="14" cy="13" r="3.2" fill="#F4DFE4"/>
+      </g>
+      ${commonHeadAndBow}
+      ${eyesAndMouth}
+    `;
+  }
+  if (pose === "stretch") {
+    return `
+      <g transform="rotate(-6 55 120)">
+        <path d="M82,138 C102,122 118,102 114,88 C110,78 98,82 92,94" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+        <ellipse cx="55" cy="134" rx="38" ry="24" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="22" cy="152" rx="13" ry="5.5" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3"/>
+        <ellipse cx="86" cy="148" rx="10" ry="7.5" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        ${commonHeadAndBow}
+        ${eyesAndMouth}
+      </g>
+    `;
+  }
+  if (pose === "roll") {
+    return `
+        </g>
+        <g transform="translate(68, 144)">
+          <ellipse cx="0" cy="0" rx="7.5" ry="6" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="2.5"/>
+          <circle cx="0" cy="0" r="3.2" fill="#F4A7B9"/>
+        </g>
+        ${commonHeadAndBow}
+        ${eyesAndMouth}
+      </g>
+    `;
+  }
+
+  // 默认：原版标准长颈端庄坐姿 (sit)
+  return `
+    <!-- 经典原版长颈端庄白猫坐姿 -->
+    <!-- 高翘尾巴 -->
+    <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#FFFDF9" stroke-width="3" stroke-linecap="round"/>
+    <!-- 挺拔身段与修长长颈 -->
+    <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+    <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+    <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+    ${commonHeadAndBow}
+    ${eyesAndMouth}
+  `;
+}
+
+// 灵猫心声独白语料库（按动作与随机分类）
+const THOUGHTS = {
+  general: [
+    "珠珠，你在这里我就觉得整个屋子好亮堂呀～",
+    "天台晒鱼架的味道好香，吸一口精神百倍！",
+    "今天的心情是粉红色的，因为有你陪伴。",
+    "伸个大大的懒腰，今天也要对自己好一点。",
+    "在手账本上踩了个小梅花印，盖章认证啦！",
+    "无论外面吹多大的风，这里永远风平浪静。",
+    "今天阳光闻起来，好像刚烤熟的小黄油饼干～",
+    "摸摸我的耳朵，今天就会有一整天的好运气！",
+    "呼噜呼噜……听星辰说，今天会有一份小确幸降临。",
+    "你写下的每一页手账日记，我都好好珍藏着呢。"
+  ],
+  loaf: [
+    "呼噜呼噜……梦到了一整片焦糖小鱼干草地……",
+    "揣好小手手，稍微打个 5 分钟小盹～",
+    "阳光暖洋洋的，眼皮有点打架啦……Zzz"
+  ],
+  groom: [
+    "洗干净小脸蛋，今天也要美美地迎接珠珠～",
+    "把胡须理一理，今天是最端庄优雅的小猫！"
+  ],
+  stretch: [
+    "呼～伸个大懒腰，浑身软绵绵的骨头都展开啦！",
+    "前爪趴趴，后腿拉长，元气满满！"
+  ],
+  roll: [
+    "软乎乎的小肚皮只给你一个人摸哦～",
+    "原地打个幸福的滚，蹭你一身猫毛！嘻嘻～"
+  ],
+  happy: [
+    "喵呜～最喜欢被珠珠这样温柔抚摸啦！💖",
+    "呼噜呼噜呼噜……幸福得冒泡泡～"
+  ]
+};
+
+// 状态机与物理移动
+let currentPose = "sit";
+let isWalking = false;
+let facing = 1;
+let thoughtTimer = null;
+let zzzTimer = null;
+
+function setPose(pose) {
+  currentPose = pose;
+  if (catSpriteSvg) catSpriteSvg.innerHTML = getCatPoseSVG(pose);
+
+  // 打盹时冒 Zzz
+  clearInterval(zzzTimer);
+  if (pose === "loaf") {
+    zzzTimer = setInterval(() => {
+      const z = document.createElement("div");
+      z.className = "zzz-mote";
+      z.textContent = "Zzz";
+      z.style.left = "28px";
+      z.style.top = "-10px";
+      if (floatingCat) floatingCat.appendChild(z);
+      setTimeout(() => z.remove(), 2200);
+    }, 1200);
+  }
+}
+
+function showThought(text, duration = 3800) {
+  if (!thoughtText || !catThoughtBubble) return;
+  thoughtText.textContent = text;
+  catThoughtBubble.classList.add("show");
+  clearTimeout(thoughtTimer);
+  thoughtTimer = setTimeout(() => {
+    catThoughtBubble.classList.remove("show");
+  }, duration);
+}
+
+// 触摸 / 点击灵猫交互
+function petCat(e) {
+  isWalking = false;
+  setPose("happy");
+  playPurrSound();
+
+  const lines = THOUGHTS.happy.concat([
+    "喵呜～摸到心坎里去啦！",
+    "耳朵抖一抖，烦恼全带走～",
+    "有珠珠在，每天都是最棒的探险！"
+  ]);
+  showThought(lines[Math.floor(Math.random() * lines.length)], 3500);
+
+  // 爆发粉红小爱心粒子
+  const rect = floatingCat.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + 30;
+
+  for (let i = 0; i < 4; i++) {
+    const heart = document.createElement("div");
+    heart.className = "heart-pop";
+    heart.textContent = Math.random() < 0.6 ? "💖" : "✨";
+    heart.style.left = cx + "px";
+    heart.style.top = cy + "px";
+    heart.style.setProperty("--dx", `${(Math.random() - 0.5) * 50}px`);
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 800);
+  }
+
+  // 2.2秒后如果没继续摸，恢复坐姿
+  clearTimeout(floatingCat._resetTimer);
+  floatingCat._resetTimer = setTimeout(() => {
+    if (currentPose === "happy") setPose("sit");
+  }, 2200);
+}
+
+// 自由拖拽与移动系统 (鼠标 + 触摸全支持，随心摆放在任意旁边位置)
+(function initDraggableCat() {
+  if (!floatingCat) return;
+
+  let isDragging = false;
+  let startX = 0, startY = 0;
+  let initLeft = 0, initTop = 0;
+  let hasMoved = false;
+
+  floatingCat.addEventListener("pointerdown", e => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    isDragging = true;
+    hasMoved = false;
+    floatingCat.classList.add("dragging");
+    try { floatingCat.setPointerCapture(e.pointerId); } catch (_) {}
+
+    const rect = floatingCat.getBoundingClientRect();
+    startX = e.clientX;
+    startY = e.clientY;
+    initLeft = rect.left;
+    initTop = rect.top;
+  });
+
+  floatingCat.addEventListener("pointermove", e => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      hasMoved = true;
+    }
+
+    let newX = initLeft + dx;
+    let newY = initTop + dy;
+
+    // 视口边界限制，保证猫猫不越界
+    const maxX = window.innerWidth - floatingCat.offsetWidth - 6;
+    const maxY = window.innerHeight - floatingCat.offsetHeight - 6;
+    newX = Math.max(6, Math.min(newX, maxX));
+    newY = Math.max(6, Math.min(newY, maxY));
+
+    floatingCat.style.left = `${newX}px`;
+    floatingCat.style.top = `${newY}px`;
+    floatingCat.style.right = "auto";
+    floatingCat.style.bottom = "auto";
+  });
+
+  function endDrag(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    floatingCat.classList.remove("dragging");
+    try { floatingCat.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+
+  floatingCat.addEventListener("pointerup", e => {
+    endDrag(e);
+    if (!hasMoved) {
+      petCat(e);
+    }
+  });
+
+  floatingCat.addEventListener("pointercancel", endDrag);
+})();
+
+// 侧边自主微漫步调度器 (侧边活动，绝不遮挡中间核心内容)
+function scheduleCatAction() {
+  const delay = 3500 + Math.random() * 4000;
+
+  setTimeout(() => {
+    const r = Math.random();
+
+    if (r < 0.35) {
+      // 侧边小步踱步与转身
+      facing = facing === 1 ? -1 : 1;
+      if (catSpriteWrapper) catSpriteWrapper.style.transform = `scaleX(${facing})`;
+      setPose("walk");
+      setTimeout(() => {
+        setPose("sit");
+        if (Math.random() < 0.4) {
+          const list = THOUGHTS.general;
+          showThought(list[Math.floor(Math.random() * list.length)]);
+        }
+        scheduleCatAction();
+      }, 1200);
+    } else if (r < 0.62) {
+      // 端坐并自言自语
+      setPose("sit");
+      const list = THOUGHTS.general;
+      showThought(list[Math.floor(Math.random() * list.length)]);
+      scheduleCatAction();
+    } else if (r < 0.82) {
+      // 洗脸抹爪或伸懒腰
+      const pose = Math.random() < 0.5 ? "groom" : "stretch";
+      setPose(pose);
+      const list = THOUGHTS[pose];
+      showThought(list[Math.floor(Math.random() * list.length)]);
+      scheduleCatAction();
+    } else {
+      // 农民揣打盹
+      setPose("loaf");
+      showThought(THOUGHTS.loaf[Math.floor(Math.random() * THOUGHTS.loaf.length)], 4500);
+      scheduleCatAction();
+    }
+  }, delay);
+}
+
+// 柔和呼噜声与水晶和弦合成 (Web Audio)
+function playPurrSound() {
+  try {
+    const a = ensureAC();
+    const t = a.currentTime;
+    // 呼噜柔频基波
+    const osc = a.createOscillator();
+    const gain = a.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(140, t);
+    osc.frequency.linearRampToValueAtTime(165, t + 0.15);
+    osc.frequency.exponentialRampToValueAtTime(120, t + 0.35);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.2, t + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+    osc.connect(gain).connect(a.destination);
+    osc.start();
+    osc.stop(t + 0.4);
+
+    // 水晶高音和弦
+    const osc2 = a.createOscillator();
+    const gain2 = a.createGain();
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(523.25, t); // C5
+    osc2.frequency.exponentialRampToValueAtTime(659.25, t + 0.2); // E5
+    gain2.gain.setValueAtTime(0.0001, t);
+    gain2.gain.linearRampToValueAtTime(0.12, t + 0.03);
+    gain2.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    osc2.connect(gain2).connect(a.destination);
+    osc2.start();
+    osc2.stop(t + 0.42);
+  } catch (e) {}
+}
+
+// 同步日记小屋中的灵猫真实成长与心情
+function syncCatHouseStatus() {
+  try {
+    const raw = localStorage.getItem("zz-cat-house-v2") || localStorage.getItem("zz-cat-house");
+    if (raw) {
+      const data = JSON.parse(raw);
+      const mood = typeof data.mood === "number" ? data.mood : 85;
+      const energy = typeof data.energy === "number" ? data.energy : 30;
+
+      let moodText = "元气依恋";
+      if (mood >= 90) moodText = "极度幸福 · 撒娇求抱";
+      else if (mood >= 70) moodText = "依恋温存 · 安适闲逛";
+      else if (mood >= 50) moodText = "平和宁静 · 享受陪伴";
+      else moodText = "渴望抚摸 · 寻求安慰";
+
+      catLiveStatus.textContent = `灵猫 · ${moodText} (幸福度 ${mood}%)`;
+    }
+  } catch (e) {}
+}
+
+// 初始化灵猫漫步
+setPose("sit");
+showThought("珠珠，你在这里我就很安心～", 4000);
+syncCatHouseStatus();
+scheduleCatAction();
+</script>
+</body>
+</html>

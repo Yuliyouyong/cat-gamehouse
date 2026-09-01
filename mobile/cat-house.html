@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<!-- 标题字体：站酷快乐体 -->
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<!-- 优雅文艺正文字体：霞鹜文楷 (LXGW WenKai Screen) -->
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css" rel="stylesheet">
+<title>珠珠与猫咪的秘密小屋</title>
+<style>
+:root {
+  /* 莫兰迪低饱和温润粉绿系统 */
+  --bg: #F3EDE8;
+  --bg-warm: #FAF4EE;
+  --bg-card: #FDFCFA;
+  --paper-cream: #F7F1EB;
+  
+  --pink: #D4A5A5;
+  --pink-deep: #B57E7E;
+  --pink-soft: #E8D5D5;
+  --pink-light: #F5EBEB;
+  --pink-accent: #E29B9B;
+
+  --green: #A3B899;
+  --green-deep: #708A66;
+  --green-soft: #C8D5C4;
+  --green-light: #EBF1EA;
+  --green-tea: #8FA685;
+
+  --purple-bow: #9B8AA5;
+  --purple-soft: #B8A8C4;
+  --purple-deep: #786882;
+
+  --gold: #D4C4A8;
+  --gold-warm: #E2CFA8;
+  --gold-glow: #F6E2B8;
+  --pearl: #FFFDF9;
+
+  --ink: #5E5252;
+  --ink-soft: #7D7070;
+  --ink-light: #9E9191;
+  --ink-faint: #C2B6B6;
+
+  --shadow-warm: 0 10px 24px -6px rgba(107, 94, 94, 0.12), 0 2px 6px rgba(107, 94, 94, 0.06);
+  --shadow-card: 0 8px 18px -4px rgba(107, 94, 94, 0.1), 0 2px 4px rgba(107, 94, 94, 0.05);
+  --shadow-float: 0 14px 30px -8px rgba(107, 94, 94, 0.16);
+
+  /* 字体分级系统 */
+  --font-display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-reading: "LXGW WenKai Screen", "LXGW WenKai", "STKaiti", "KaiTi", "PingFang SC", serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+}
+
+/* ================= 和纸噪点与呼吸光斑背景 ================= */
+.paper-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.paper-grain {
+  position: absolute;
+  inset: -20px;
+  opacity: 0.38;
+  background-image: radial-gradient(rgba(107, 94, 94, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: 0 0;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(65px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: orbFloat 14s ease-in-out infinite alternate;
+}
+
+.glow-orb.pink {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(232, 213, 213, 0.8) 0%, rgba(212, 165, 165, 0.2) 70%, transparent 100%);
+  top: -60px;
+  right: -50px;
+}
+
+.glow-orb.green {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(200, 213, 196, 0.8) 0%, rgba(163, 184, 153, 0.2) 70%, transparent 100%);
+  bottom: 80px;
+  left: -80px;
+  animation-delay: -7s;
+}
+
+@keyframes orbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 40px) scale(1.1); }
+  100% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+#starDustCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ================= 布局框架 ================= */
+.app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+.page {
+  position: absolute;
+  inset: 0 0 68px 0;
+  overflow-y: auto;
+  padding: 16px 16px 36px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1), transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(8px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.page.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.page-inner {
+  max-width: 580px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ================= 头部标题手账风 ================= */
+.header-banner {
+  text-align: center;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  text-shadow: 2px 2px 0 var(--pink-soft);
+  position: relative;
+}
+
+.title-ornament {
+  width: 22px;
+  height: 22px;
+  color: var(--green);
+}
+
+.sub-greeting {
+  font-family: var(--font-reading);
+  font-size: 13.5px;
+  color: var(--green-deep);
+  letter-spacing: 2px;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+/* ================= 手撕纸胶带效果 (Washi Tape) ================= */
+.washi-tape {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 90px;
+  height: 22px;
+  background: rgba(200, 213, 196, 0.72);
+  backdrop-filter: blur(2px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  clip-path: polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.washi-tape.pink {
+  background: rgba(232, 213, 213, 0.75);
+  transform: translateX(-50%) rotate(1.2deg);
+}
+
+/* ================= 返回大厅手绘木牌悬浮按钮 ================= */
+.back-home-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(253, 250, 247, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid var(--paper-cream);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(107, 94, 94, 0.12);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.back-home-btn:hover {
+  transform: translateY(-2px) rotate(-1.5deg);
+  color: var(--green-deep);
+  border-color: var(--green-soft);
+  box-shadow: 0 6px 16px rgba(112, 138, 102, 0.2);
+}
+
+.back-home-btn:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.back-home-ico {
+  width: 16px;
+  height: 16px;
+  color: var(--green-deep);
+}
+
+/* 高精焦香小鱼干与水彩花花 */
+.fish-snack-svg {
+  width: 28px;
+  height: 18px;
+  filter: drop-shadow(0 2px 3px rgba(146, 64, 14, 0.25));
+  transition: transform 0.2s ease;
+}
+
+#feedBtn:hover .fish-snack-svg {
+  transform: rotate(-10deg) scale(1.15);
+}
+
+/* ================= 底部固定手账导航 ================= */
+.tabbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 66px;
+  z-index: 50;
+  background: rgba(253, 250, 247, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  border-top: 1.5px solid rgba(212, 165, 165, 0.35);
+  box-shadow: 0 -4px 20px rgba(107, 94, 94, 0.08);
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: all 0.25s ease;
+  position: relative;
+  color: var(--ink-light);
+}
+
+.tab-ico {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tab-text {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.tab.active {
+  color: var(--green-deep);
+}
+
+.tab.active .tab-ico {
+  transform: scale(1.15) translateY(-1px);
+}
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  width: 22px;
+  height: 3px;
+  background: var(--green);
+  border-radius: 99px;
+  box-shadow: 0 0 8px rgba(163, 184, 153, 0.6);
+}
+
+/* ================= 通用手绘风格按钮 ================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid var(--pink);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #6D4D4D;
+  cursor: pointer;
+  background: linear-gradient(180deg, #FAF1F1, var(--pink-soft));
+  box-shadow: 0 4px 10px rgba(181, 126, 126, 0.2), inset 0 1px 0 #FFF;
+  transition: all 0.16s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 14px rgba(181, 126, 126, 0.26), inset 0 1px 0 #FFF;
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 6px rgba(181, 126, 126, 0.2);
+}
+
+.btn.green {
+  border-color: var(--green);
+  color: #43543F;
+  background: linear-gradient(180deg, #F3F8F2, var(--green-soft));
+  box-shadow: 0 4px 10px rgba(112, 138, 102, 0.2), inset 0 1px 0 #FFF;
+}
+
+.btn.green:hover {
+  box-shadow: 0 6px 14px rgba(112, 138, 102, 0.28), inset 0 1px 0 #FFF;
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ================= 页面 A：抽塔罗精细化 ================= */
+.tarot-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.tarot-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  padding-top: 4px;
+}
+
+.tarot-side-cat {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.tarot-side-cat:hover {
+  transform: translateY(-4px);
+}
+
+.tarot-cat {
+  width: 92px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 6px 10px rgba(107, 94, 94, 0.14));
+}
+
+.tarot-cat.mirror {
+  transform: scaleX(-1);
+}
+
+.cat-bubble {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.85);
+  background: var(--bg-card);
+  border: 1.5px solid var(--pink-soft);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-family: var(--font-reading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: var(--shadow-card);
+  transition: opacity 0.2s, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cat-bubble.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.cat-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--pink-soft);
+}
+
+/* 3D 塔罗牌质感与仪式感 */
+.card-3d {
+  width: 196px;
+  height: 298px;
+  perspective: 1100px;
+  cursor: pointer;
+  position: relative;
+  filter: drop-shadow(0 14px 28px rgba(107, 94, 94, 0.18));
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+.card-3d.shuffle .card-inner {
+  animation: shuffleFlicker 0.45s ease-in-out infinite;
+}
+
+@keyframes shuffleFlicker {
+  0%, 100% { transform: rotate(-3.5deg) scale(0.98); }
+  50% { transform: rotate(3.5deg) scale(1.02); }
+}
+
+.card-3d.shining {
+  filter: drop-shadow(0 0 32px rgba(246, 226, 184, 0.95)) drop-shadow(0 14px 28px rgba(107, 94, 94, 0.18));
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+/* 牌背：柔紫星月与温润金轨 */
+.card-back {
+  background: linear-gradient(145deg, #DFCEE2 0%, #C4B0CE 48%, #A896B4 100%);
+  border: 3.5px solid #F6EDDC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.card-back::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1.5px dashed rgba(255, 253, 249, 0.7);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.card-back-pattern {
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.cb-center-emblem {
+  width: 72px;
+  height: 72px;
+  animation: starPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes starPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
+  50% { transform: scale(1.08) rotate(4deg); opacity: 1; }
+}
+
+.card-back .cb-text {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  color: #FFFDF9;
+  letter-spacing: 5px;
+  text-shadow: 0 1px 3px rgba(100, 70, 110, 0.4);
+}
+
+/* 牌正面：法式复古烫金神谕感 */
+.card-front {
+  transform: rotateY(180deg);
+  background: linear-gradient(165deg, #FFFFFF 0%, #FCF8F5 55%, #F7EFE9 100%);
+  border: 3.5px solid #F0D9C8;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 12px 12px;
+  position: relative;
+}
+
+.card-front::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(212, 196, 168, 0.5);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.f-top-decor {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-reading);
+  font-size: 11px;
+  color: var(--pink-deep);
+  letter-spacing: 2px;
+  padding: 0 4px;
+  z-index: 2;
+}
+
+.f-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+.f-sym-holder {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(232, 213, 213, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+
+.f-sym-svg {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 2px 4px rgba(107, 94, 94, 0.15));
+}
+
+.f-name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 4px;
+  color: #7D515D;
+}
+
+.f-en {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  color: #B5939F;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.f-bot-tag {
+  text-align: center;
+  font-family: var(--font-reading);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 3px;
+  z-index: 2;
+}
+
+/* 牌面流光闪过动画 (Shimmer) */
+.card-shimmer {
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.5) 48%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(255, 255, 255, 0.5) 52%,
+    transparent 58%
+  );
+  pointer-events: none;
+  opacity: 0;
+}
+
+.card-shimmer.sweep {
+  animation: shimmerSweep 1s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+
+@keyframes shimmerSweep {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(50%); opacity: 0; }
+}
+
+.guide {
+  font-family: var(--font-reading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: 1.5px;
+  min-height: 24px;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* 双栏神谕信笺 (Oracle Sheet) */
+.oracle-sheet {
+  width: 100%;
+  background: var(--bg-card);
+  border: 2px solid var(--paper-cream);
+  border-radius: 20px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-warm);
+  margin-top: 6px;
+  position: relative;
+  animation: riseSheet 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes riseSheet {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sheet-seal {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+}
+
+.reading-title-wrap {
+  text-align: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px dashed var(--pink-soft);
+}
+
+.reading-title {
+  font-family: var(--font-display);
+  font-size: 21px;
+  letter-spacing: 3px;
+  color: #7D515D;
+}
+
+.oracle-block {
+  margin-bottom: 14px;
+}
+
+.oracle-block:last-of-type {
+  margin-bottom: 16px;
+}
+
+.oracle-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  letter-spacing: 2px;
+  color: var(--green-deep);
+  margin-bottom: 6px;
+}
+
+.oracle-header.care {
+  color: var(--pink-deep);
+}
+
+.oracle-ico {
+  width: 17px;
+  height: 17px;
+}
+
+.oracle-p {
+  font-family: var(--font-reading);
+  font-size: 15px;
+  line-height: 1.85;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  padding-left: 23px;
+  text-align: justify;
+}
+
+/* ================= 页面 B：日记本与灵猫养成 ================= */
+.cat-haven {
+  position: relative;
+  background: linear-gradient(180deg, #EEF3EC 0%, #E3EBE0 100%);
+  border: 2px solid var(--green-soft);
+  border-radius: 24px;
+  box-shadow: var(--shadow-warm);
+  padding: 22px 18px 16px;
+  margin-bottom: 20px;
+}
+
+/* 告白横幅：珍珠质感微光 */
+.cat-banner {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-reading);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: #6C5B7B;
+  background: linear-gradient(135deg, #FFFFFF, #FFFDF8);
+  border: 2px solid var(--gold);
+  border-radius: 999px;
+  padding: 4px 18px;
+  box-shadow: 0 0 16px rgba(226, 207, 168, 0.8), 0 2px 8px rgba(107, 94, 94, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: bannerPearlGlow 3.5s ease-in-out infinite;
+}
+
+@keyframes bannerPearlGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(226, 207, 168, 0.6), 0 2px 6px rgba(107, 94, 94, 0.08); }
+  50% { box-shadow: 0 0 24px rgba(246, 226, 184, 1), 0 4px 12px rgba(107, 94, 94, 0.12); }
+}
+
+.banner-star {
+  width: 14px;
+  height: 14px;
+  color: var(--gold-warm);
+}
+
+.cat-haven-body {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.cat-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.cat-fig-main {
+  width: 122px;
+  height: auto;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 8px 14px rgba(107, 94, 94, 0.16));
+  animation: idleBreathe 4s ease-in-out infinite;
+}
+
+@keyframes idleBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.015, 0.985); }
+}
+
+.stage-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: linear-gradient(135deg, var(--green), var(--green-deep));
+  color: #FFF;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(70, 95, 60, 0.3);
+  z-index: 5;
+}
+
+.cat-dialogue-bubble {
+  flex: 1;
+  background: var(--bg-card);
+  border: 2px solid var(--pink-soft);
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px 15px;
+  font-family: var(--font-reading);
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  min-height: 64px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cat-dialogue-bubble::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  bottom: 18px;
+  border: 5px solid transparent;
+  border-right-color: var(--pink-soft);
+}
+
+.cat-dialogue-bubble::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  bottom: 18px;
+  border: 5px solid transparent;
+  border-right-color: var(--bg-card);
+}
+
+/* ================= 状态物化：软木塞珍珠许愿瓶与向日葵花泉 ================= */
+.vessel-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.wish-vessel-card {
+  background: rgba(253, 252, 250, 0.94);
+  border: 1.8px solid #E2D7CB;
+  border-radius: 18px;
+  padding: 8px 12px;
+  box-shadow: 0 3px 10px rgba(107, 94, 94, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.wish-vessel-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--green);
+  box-shadow: 0 6px 16px rgba(112, 138, 102, 0.18);
+}
+
+.wish-vessel-card.heart:hover {
+  border-color: var(--pink);
+  box-shadow: 0 6px 16px rgba(212, 165, 165, 0.22);
+}
+
+.vessel-artwork {
+  width: 44px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.bottle-svg, .fountain-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(107, 94, 94, 0.15));
+}
+
+.vessel-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vessel-badge-title {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  color: var(--green-deep);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wish-vessel-card.heart .vessel-badge-title {
+  color: var(--pink-deep);
+}
+
+.vessel-sub-detail {
+  font-family: var(--font-reading);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+/* 珍珠微光浮动 */
+.pearl-mote {
+  animation: pearlBreathe 2.4s ease-in-out infinite alternate;
+}
+@keyframes pearlBreathe {
+  0% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 2px #FFE5A3); }
+  100% { transform: translateY(-2.5px) scale(1.08); filter: drop-shadow(0 0 5px #FFF4D0); }
+}
+
+.feed-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(163, 184, 153, 0.4);
+}
+
+.inventory-tags {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-reading);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.inv-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.inv-ico {
+  width: 17px;
+  height: 17px;
+}
+
+/* ================= 手账日记本（带复古金属活页环） ================= */
+.journal-book {
+  position: relative;
+  background: var(--bg-card);
+  border: 2px solid #EADBCE;
+  border-radius: 22px;
+  padding: 22px 20px 18px 36px;
+  box-shadow: var(--shadow-warm);
+}
+
+/* 左侧复古金属活页扣环 */
+.binder-rings {
+  position: absolute;
+  left: 9px;
+  top: 32px;
+  bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.binder-ring {
+  width: 17px;
+  height: 28px;
+  border: 3px solid #BF9E72;
+  border-right: none;
+  border-radius: 14px 0 0 14px;
+  box-shadow: -2px 2px 4px rgba(94, 82, 82, 0.22);
+  position: relative;
+  background: linear-gradient(135deg, #EAD7BA 0%, #B28F60 100%);
+}
+
+.binder-ring::before, .binder-ring::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6E5E57;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+}
+.binder-ring::before { top: -2px; }
+.binder-ring::after { bottom: -2px; }
+
+.journal-paper {
+  position: relative;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 28px,
+    rgba(212, 165, 165, 0.18) 29px,
+    transparent 30px
+  );
+  border-radius: 12px;
+  padding: 4px 4px 10px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 94px;
+  resize: none;
+  border: none;
+  background: transparent;
+  font-family: var(--font-reading);
+  font-size: 15px;
+  line-height: 30px;
+  color: var(--ink);
+  outline: none;
+  letter-spacing: 0.04em;
+}
+
+textarea::placeholder {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+.word-count {
+  position: absolute;
+  right: 6px;
+  bottom: 0;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-light);
+}
+
+/* ================= 7 大情境手绘水彩微雕印章 ================= */
+.stamp-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(66px, 1fr));
+  gap: 7px;
+  margin: 14px 0 16px;
+}
+
+.stamp-btn {
+  border: 1.5px dashed #DCCFBF;
+  background: #FCF9F5;
+  border-radius: 14px;
+  padding: 8px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+.stamp-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: var(--pink-deep);
+  box-shadow: 0 4px 12px rgba(181, 126, 126, 0.2);
+  background: #FFFDFB;
+}
+
+.stamp-btn.active {
+  border-style: solid;
+  border-color: #B57E7E;
+  background: linear-gradient(145deg, #FFF7F7 0%, #FEECEC 100%);
+  box-shadow: 0 4px 14px rgba(181, 126, 126, 0.28), inset 0 0 0 1.5px rgba(212, 165, 165, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  animation: stampPress 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes stampPress {
+  0% { transform: translateY(-2px) scale(0.92); }
+  50% { transform: translateY(2px) scale(1.08); }
+  100% { transform: translateY(-2px) scale(1.05); }
+}
+
+.stamp-art-svg {
+  width: 32px;
+  height: 32px;
+  transition: transform 0.22s ease;
+}
+
+.stamp-btn:hover .stamp-art-svg {
+  transform: scale(1.12);
+}
+
+.stamp-name {
+  font-family: var(--font-reading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  letter-spacing: 1px;
+}
+
+.stamp-btn.active .stamp-name {
+  color: #7D4A55;
+  font-weight: 900;
+}
+
+.journal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stamp-feedback {
+  font-family: var(--font-reading);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+
+/* ================= 历史日记手账便签流 ================= */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.tl-sticky-note {
+  position: relative;
+  background: var(--bg-card);
+  border: 1.5px solid #EBE0D5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tl-sticky-note:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-warm);
+}
+
+.tl-sticky-tape {
+  position: absolute;
+  top: -8px;
+  left: 24px;
+  width: 48px;
+  height: 16px;
+  background: rgba(200, 213, 196, 0.65);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  clip-path: polygon(4% 0%, 96% 0%, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
+  pointer-events: none;
+}
+
+.tl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.tl-date {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-light);
+  letter-spacing: 1px;
+}
+
+.tl-mood-badge {
+  font-family: var(--font-reading);
+  font-size: 11.5px;
+  font-weight: 700;
+  background: var(--green-light);
+  color: var(--green-deep);
+  border: 1px solid var(--green-soft);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.tl-content {
+  font-family: var(--font-reading);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tl-sticky-note.open .tl-content {
+  -webkit-line-clamp: unset;
+}
+
+/* ================= 仪式感特效：火漆猫爪盖印 ================= */
+.wax-seal-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wax-seal {
+  width: 90px;
+  height: 90px;
+  filter: drop-shadow(0 12px 24px rgba(181, 70, 70, 0.4));
+  animation: waxStamp 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes waxStamp {
+  0% { transform: scale(3.5) rotate(-18deg); opacity: 0; }
+  45% { transform: scale(0.92) rotate(4deg); opacity: 1; }
+  65% { transform: scale(1.05) rotate(-2deg); opacity: 1; }
+  80% { transform: scale(1) rotate(0); opacity: 1; }
+  100% { transform: scale(1) translateY(-20px); opacity: 0; }
+}
+
+/* 飞入能量罐的抛物线粒子 */
+.fly-mote {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.85s ease;
+}
+
+/* 移动端细致适配 */
+@media (max-width: 560px) {
+  .page-title { font-size: 24px; letter-spacing: 3px; }
+  .card-3d { width: 164px; height: 250px; }
+  .tarot-cat { width: 72px; }
+  .cat-fig-main { width: 100px; }
+  .cat-dialogue-bubble { font-size: 13.5px; }
+  .oracle-p { font-size: 14px; }
+  .vessel-stats { grid-template-columns: 1fr; gap: 8px; }
+  .stamp-row { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .journal-book { padding: 18px 14px 16px 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 莫兰纸肌理背景与动态柔光 -->
+<div class="paper-ambient">
+  <div class="paper-grain"></div>
+  <div class="glow-orb pink"></div>
+  <div class="glow-orb green"></div>
+  <canvas id="starDustCanvas"></canvas>
+  <!-- 散落手账饰品 (珍珠、小花、蝴蝶结) -->
+  <div style="position:fixed;top:25px;right:32px;pointer-events:none;z-index:5;">
+    <svg width="24" height="20" viewBox="0 0 32 26">
+      <path d="M14,12 C6,3 1,8 1,15 C1,22 11,18 14,12" fill="#D4A5A5" stroke="#B57E7E" stroke-width="1.6"/>
+      <path d="M18,12 C26,3 31,8 31,15 C31,22 21,18 18,12" fill="#D4A5A5" stroke="#B57E7E" stroke-width="1.6"/>
+      <circle cx="16" cy="12" r="3" fill="#FFFDF9"/>
+    </svg>
+  </div>
+  <div style="position:fixed;bottom:35px;right:36px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FFF 0%,#FFF5EC 40%,#E8D6CE 75%,#C2A99E 100%);box-shadow:0 3px 8px rgba(0,0,0,0.12);pointer-events:none;z-index:5;"></div>
+</div>
+
+<!-- 返回游戏大厅悬浮手账标牌 -->
+<a class="back-home-btn" href="index.html" title="返回猫猫游戏屋大厅">
+  <svg class="back-home-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    <polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+  <span>猫猫屋</span>
+</a>
+
+<div class="app">
+  <!-- ================= 页面 A：抽塔罗 ================= -->
+  <section class="page active" id="pageTarot">
+    <div class="page-inner">
+      <div class="header-banner">
+        <h2 class="page-title">
+          <svg class="title-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"/></svg>
+          今日塔罗 · 心灵签
+          <svg class="title-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9Z"/></svg>
+        </h2>
+        <div class="sub-greeting">轻叩心门 · 聆听星辰与灵猫的絮语</div>
+      </div>
+
+      <div class="tarot-stage">
+        <div class="tarot-row">
+          <!-- 左侧守护喵 -->
+          <div class="tarot-side-cat" id="tarotCatWrap">
+            <div class="cat-bubble" id="tarotBubble">点我呀～</div>
+            <svg class="tarot-cat" id="tarotCat" viewBox="0 0 110 165" aria-label="守护喵"></svg>
+          </div>
+
+          <!-- 3D 塔罗牌 -->
+          <div class="card-3d" id="card3d">
+            <div class="card-inner" id="cardInner">
+              <!-- 牌背 -->
+              <div class="card-face card-back">
+                <div class="card-back-pattern"></div>
+                <svg class="cb-center-emblem" viewBox="0 0 80 80">
+                  <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
+                  <circle cx="40" cy="40" r="24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-dasharray="3 3"/>
+                  <path d="M40 16 C48 30 50 32 64 40 C50 48 48 50 40 64 C32 50 30 48 16 40 C30 32 32 30 40 16 Z" fill="#FFFDF9" opacity="0.85"/>
+                  <circle cx="40" cy="40" r="4" fill="#E2CFA8"/>
+                </svg>
+                <span class="cb-text">灵猫神谕</span>
+              </div>
+
+              <!-- 牌正面 -->
+              <div class="card-face card-front">
+                <div class="card-shimmer" id="cardShimmer"></div>
+                <div class="f-top-decor">
+                  <span>✦</span>珠珠的小屋<span>✦</span>
+                </div>
+                <div class="f-body">
+                  <div class="f-sym-holder" id="fSymHolder">
+                    <!-- 动态注入高精手绘 SVG 符号 -->
+                  </div>
+                  <div class="f-name" id="fName">命运之轮</div>
+                  <div class="f-en" id="fEn">Wheel of Fortune</div>
+                </div>
+                <div class="f-bot-tag">温 柔 守 护 · 仅 供 今 日</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧守护喵 -->
+          <div class="tarot-side-cat" id="tarotCatWrapR">
+            <div class="cat-bubble" id="tarotBubbleR">喵呜～</div>
+            <svg class="tarot-cat mirror" id="tarotCatR" viewBox="0 0 110 165" aria-label="守护喵"></svg>
+          </div>
+        </div>
+
+        <div class="guide" id="guide">深呼吸，感受心中的念头……</div>
+        
+        <button class="btn green" id="drawBtn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+          抽一张今日签
+        </button>
+
+        <!-- 双栏神谕信笺 -->
+        <div class="oracle-sheet" id="reading" style="display:none">
+          <div class="washi-tape"></div>
+          <div class="reading-title-wrap">
+            <h3 class="reading-title" id="readingTitle">【愚人】The Fool</h3>
+          </div>
+          
+          <div class="oracle-block">
+            <div class="oracle-header">
+              <svg class="oracle-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+              <span>心灵意象 · 文艺留白</span>
+            </div>
+            <p class="oracle-p" id="readA"></p>
+          </div>
+
+          <div class="oracle-block">
+            <div class="oracle-header care">
+              <svg class="oracle-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>今日关怀 · 自我呵护</span>
+            </div>
+            <p class="oracle-p" id="readB"></p>
+          </div>
+
+          <div style="text-align:center;margin-top:14px">
+            <button class="btn" id="againBtn">收好签文，再抽一次</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 页面 B：日记本与灵猫养成 ================= -->
+  <section class="page" id="pageDiary">
+    <div class="page-inner">
+      <div class="header-banner">
+        <h2 class="page-title">
+          <svg class="title-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+          日记本 · 灵猫小屋
+          <svg class="title-ornament" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+        </h2>
+        <div class="sub-greeting">字字心语，皆是时光孕育的珍珠</div>
+      </div>
+
+      <!-- 灵猫温润区域 -->
+      <div class="cat-haven">
+        <div class="cat-banner" id="banner">
+          <svg class="banner-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.1-6.2-4.4-6.2 4.4 2.3-7.1-6.1-4.5h7.6z"/></svg>
+          <span>你的存在对我而言是珍珠</span>
+          <svg class="banner-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.1-6.2-4.4-6.2 4.4 2.3-7.1-6.1-4.5h7.6z"/></svg>
+        </div>
+
+        <div class="cat-haven-body">
+          <div class="cat-avatar-wrap" id="catHolder" title="轻抚猫咪">
+            <span class="stage-badge" id="stageTag">幼猫期</span>
+            <svg class="cat-fig-main" id="catSvg" viewBox="0 0 110 165" aria-label="灵猫"></svg>
+          </div>
+          <div class="cat-dialogue-bubble" id="speech">
+            呼噜呼噜……你回来啦，我在这里等你好久了。
+          </div>
+        </div>
+
+        <!-- 物化状态展示：复古软木塞珍珠许愿瓶与向日葵花泉 -->
+        <div class="vessel-stats">
+          <!-- 灵能珍珠瓶 -->
+          <div class="wish-vessel-card" id="bottleCard" title="记录生活即可收集灵能珍珠">
+            <div class="vessel-artwork">
+              <svg class="bottle-svg" viewBox="0 0 44 54">
+                <defs>
+                  <linearGradient id="glassShine" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
+                    <stop offset="40%" stop-color="rgba(255,255,255,0.15)"/>
+                    <stop offset="100%" stop-color="rgba(200,225,215,0.3)"/>
+                  </linearGradient>
+                  <radialGradient id="pearlShine" cx="35%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#FFFFFF"/>
+                    <stop offset="45%" stop-color="#FFF2CE"/>
+                    <stop offset="100%" stop-color="#E5BE6C"/>
+                  </radialGradient>
+                </defs>
+                <!-- 瓶颈与细麻绳木塞 -->
+                <rect x="17" y="2" width="10" height="7" rx="1.5" fill="#A87948" stroke="#7A5328" stroke-width="1.2"/>
+                <path d="M14,9 L30,9 L27,15 L17,15 Z" fill="#EADCC9" stroke="#9E876F" stroke-width="1.2"/>
+                <!-- 麻绳系带 -->
+                <line x1="16" y1="12" x2="28" y2="12" stroke="#8C5E28" stroke-width="1.5"/>
+                <circle cx="28" cy="12" r="1.5" fill="#C49A5A"/>
+                <!-- 瓶身晶莹透明外壁 -->
+                <path d="M17,15 C10,17 5,25 5,34 C5,46 12,52 22,52 C32,52 39,46 39,34 C39,25 34,17 27,15 Z" 
+                      fill="url(#glassShine)" stroke="#9CB8A8" stroke-width="1.6"/>
+                <!-- 内部晶莹灵能珍珠 -->
+                <g id="bottlePearls">
+                  <circle cx="16" cy="40" r="4.2" fill="url(#pearlShine)" class="pearl-mote"/>
+                  <circle cx="27" cy="41" r="3.8" fill="url(#pearlShine)" class="pearl-mote" style="animation-delay:-0.8s"/>
+                  <circle cx="21" cy="32" r="4.5" fill="url(#pearlShine)" class="pearl-mote" style="animation-delay:-1.6s"/>
+                  <circle cx="14" cy="27" r="3.2" fill="url(#pearlShine)" class="pearl-mote" style="animation-delay:-0.4s"/>
+                  <circle cx="29" cy="29" r="3.5" fill="url(#pearlShine)" class="pearl-mote" style="animation-delay:-1.2s"/>
+                </g>
+                <!-- 玻璃高光反光弧 -->
+                <path d="M9,25 C8,33 9,43 15,48" stroke="#FFF" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.8"/>
+              </svg>
+            </div>
+            <div class="vessel-info">
+              <div class="vessel-badge-title">
+                <span>🔋 灵能瓶</span>
+                <span><b id="energyVal">0</b> 点</span>
+              </div>
+              <div class="vessel-sub-detail" id="energyStageDesc">时光孕育 · 莹润如珠</div>
+            </div>
+          </div>
+
+          <!-- 幸福花泉 -->
+          <div class="wish-vessel-card heart" id="moodCard" title="轻抚猫咪或喂食保持好心情">
+            <div class="vessel-artwork">
+              <svg class="fountain-svg" viewBox="0 0 44 54">
+                <defs>
+                  <linearGradient id="heartGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#FFDEE9"/>
+                    <stop offset="100%" stop-color="#B57E7E"/>
+                  </linearGradient>
+                </defs>
+                <!-- 水盆基座 -->
+                <ellipse cx="22" cy="46" rx="18" ry="6" fill="#F3E9E2" stroke="#B8A495" stroke-width="1.4"/>
+                <!-- 心形温室水波 -->
+                <path d="M22,12 C16,4 4,12 8,24 C11,33 22,42 22,42 C22,42 33,33 36,24 C40,12 28,4 22,12 Z" 
+                      fill="url(#heartGrad)" opacity="0.88" stroke="#B57E7E" stroke-width="1.5"/>
+                <!-- 水波微光与浮花 -->
+                <circle cx="16" cy="18" r="2" fill="#FFF" opacity="0.8"/>
+                <circle cx="27" cy="21" r="1.5" fill="#FFF" opacity="0.8"/>
+                <!-- 旁边点缀两朵嫩粉小花 -->
+                <circle cx="8" cy="43" r="3" fill="#F8C3CD"/>
+                <circle cx="8" cy="43" r="1" fill="#FFF275"/>
+                <circle cx="36" cy="42" r="3.2" fill="#F8C3CD"/>
+                <circle cx="36" cy="42" r="1" fill="#FFF275"/>
+              </svg>
+            </div>
+            <div class="vessel-info">
+              <div class="vessel-badge-title">
+                <span>💗 幸福温存</span>
+                <span><b id="moodVal">80</b>%</span>
+              </div>
+              <div class="vessel-sub-detail">灵猫温存 · 依赖依恋</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feed-bar">
+          <div class="inventory-tags">
+            <span class="inv-item" title="写日记获得的小花">
+              <svg class="inv-ico" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="5" fill="#F4A7B9"/>
+                <circle cx="12" cy="7" r="4" fill="#F8C3CD" opacity="0.9"/>
+                <circle cx="12" cy="17" r="4" fill="#F8C3CD" opacity="0.9"/>
+                <circle cx="7" cy="12" r="4" fill="#F8C3CD" opacity="0.9"/>
+                <circle cx="17" cy="12" r="4" fill="#F8C3CD" opacity="0.9"/>
+                <circle cx="12" cy="12" r="2.5" fill="#FFF275"/>
+              </svg>
+              小花：<b id="invFlower">0</b>
+            </span>
+            <span class="inv-item" title="写日记采撷的星芒">
+              <svg class="inv-ico" viewBox="0 0 24 24">
+                <polygon points="12,1 15,8 23,12 15,16 12,23 9,16 1,12 9,8" fill="#F6D365"/>
+                <polygon points="12,4 14,9 20,12 14,15 12,20 10,15 4,12 10,9" fill="#FFF9D2"/>
+                <circle cx="12" cy="12" r="2" fill="#FFF"/>
+              </svg>
+              星芒：<b id="invStar">0</b>
+            </span>
+          </div>
+          <button class="btn" id="feedBtn" style="padding:6px 18px 6px 14px;font-size:14px" title="消耗小花或星芒喂食灵猫">
+            <!-- 高精香烤焦糖小鱼干（带渐变金身、白肚皮、烧烤纹与热气） -->
+            <svg class="fish-snack-svg" viewBox="0 0 34 22">
+              <defs>
+                <linearGradient id="fishRoast" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FFD480"/>
+                  <stop offset="50%" stop-color="#F5A623"/>
+                  <stop offset="100%" stop-color="#D97706"/>
+                </linearGradient>
+              </defs>
+              <!-- 诱人香气微风波纹 -->
+              <path d="M9,3 Q11,1 9,-1 M15,2 Q17,0 15,-2" stroke="#D97706" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.75"/>
+              <!-- 鱼尾鳍 -->
+              <path d="M26,11 L32,5 L29,11 L32,17 Z" fill="#D97706" stroke="#B45309" stroke-width="1"/>
+              <!-- 鱼背鳍腹鳍 -->
+              <path d="M14,5 Q18,2 22,6" fill="#F5A623" stroke="#B45309" stroke-width="0.8"/>
+              <path d="M16,16 Q19,19 22,16" fill="#F5A623" stroke="#B45309" stroke-width="0.8"/>
+              <!-- 肥美主鱼身 -->
+              <path d="M4,11 C8,4 21,4 26,11 C21,18 8,18 4,11 Z" fill="url(#fishRoast)" stroke="#B45309" stroke-width="1.2"/>
+              <!-- 白嫩鱼肚皮 -->
+              <path d="M6,11 C10,16 20,16 24,11 C20,13 10,13 6,11 Z" fill="#FFF9E6" opacity="0.9"/>
+              <!-- 焦香烧烤烤痕 -->
+              <path d="M12,7 L13,12 M17,7 L18,12 M22,8 L23,12" stroke="#78350F" stroke-width="1.3" stroke-linecap="round" opacity="0.7"/>
+              <!-- 黑豆大萌眼与纯白高光 -->
+              <circle cx="8" cy="9.5" r="1.8" fill="#451A03"/>
+              <circle cx="7.5" cy="9" r="0.6" fill="#FFF"/>
+              <!-- 可爱微笑鱼嘴 -->
+              <path d="M4,11 Q5,12.5 4,13" stroke="#B45309" stroke-width="0.9" fill="none"/>
+            </svg>
+            喂食小鱼干
+          </button>
+        </div>
+      </div>
+
+      <!-- 手账日记书写卡片（左侧配有金属活页环） -->
+      <div class="journal-book">
+        <div class="binder-rings">
+          <div class="binder-ring"></div>
+          <div class="binder-ring"></div>
+          <div class="binder-ring"></div>
+        </div>
+        <div class="washi-tape pink"></div>
+        <div class="journal-paper">
+          <textarea id="diaryInput" maxlength="200" placeholder="今天有什么悄悄话想记下吗？写一个字也是美好的印记……"></textarea>
+          <span class="word-count" id="wordCount">0 / 200</span>
+        </div>
+
+        <!-- 7 大情境水彩微雕插画心情印章 -->
+        <div class="stamp-row" id="moodRow">
+          <!-- 1. 开心：向日葵猫猫笑脸 -->
+          <button class="stamp-btn" data-mood="开心" title="开心 · 向阳而生">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 向日葵花瓣 -->
+              <circle cx="18" cy="18" r="13" fill="#FFF1C2"/>
+              <path d="M18,3 L20,8 L18,10 L16,8 Z M33,18 L28,20 L26,18 L28,16 Z M18,33 L16,28 L18,26 L20,28 Z M3,18 L8,16 L10,18 L8,20 Z" fill="#F5A623"/>
+              <path d="M28,8 L25,12 L23,11 L25,7 Z M28,28 L25,25 L23,26 L24,30 Z M8,28 L11,25 L13,26 L12,30 Z M8,8 L11,11 L13,10 L11,6 Z" fill="#F5A623"/>
+              <!-- 中心笑脸猫脸 -->
+              <ellipse cx="18" cy="19" rx="8" ry="7" fill="#FFFDF9" stroke="#D4A5A5" stroke-width="1"/>
+              <polygon points="12,14 14,9 17,13" fill="#FFFDF9" stroke="#D4A5A5" stroke-width="0.8"/>
+              <polygon points="24,14 22,9 19,13" fill="#FFFDF9" stroke="#D4A5A5" stroke-width="0.8"/>
+              <!-- 眯眯笑眼与腮红 -->
+              <path d="M14,19 Q15.5,17.5 17,19 M19,19 Q20.5,17.5 22,19" stroke="#5E5252" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <circle cx="13" cy="21" r="1.5" fill="#F4A7B9" opacity="0.8"/>
+              <circle cx="23" cy="21" r="1.5" fill="#F4A7B9" opacity="0.8"/>
+            </svg>
+            <span class="stamp-name">开心</span>
+          </button>
+
+          <!-- 2. 平静：温润茶香涟漪 -->
+          <button class="stamp-btn" data-mood="平静" title="平静 · 岁月安澜">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 升腾的袅袅轻烟水汽 -->
+              <path d="M15,10 Q17,6 14,3 M21,9 Q19,5 22,2" stroke="#708A66" stroke-width="1.3" fill="none" stroke-linecap="round" opacity="0.65"/>
+              <!-- 白瓷茶杯 -->
+              <ellipse cx="18" cy="16" rx="11" ry="4" fill="#EBF1EA" stroke="#708A66" stroke-width="1.2"/>
+              <path d="M7,16 C7,27 11,29 18,29 C25,29 29,27 29,16 Z" fill="#FFFDF9" stroke="#708A66" stroke-width="1.2"/>
+              <!-- 杯中茶水微波 -->
+              <ellipse cx="18" cy="16" rx="8" ry="2.5" fill="#C8D5C4"/>
+              <!-- 浮着的一片绿茶嫩叶 -->
+              <path d="M16,16 Q18,14.5 20,16 Q18,17.5 16,16 Z" fill="#527047"/>
+              <ellipse cx="18" cy="30" rx="13" ry="2.5" fill="#D6E0D4" opacity="0.5"/>
+            </svg>
+            <span class="stamp-name">平静</span>
+          </button>
+
+          <!-- 3. 疲惫：云朵小床憨睡猫 -->
+          <button class="stamp-btn" data-mood="疲惫" title="疲惫 · 软绵歇息">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 灰紫棉花糖云朵床 -->
+              <path d="M10,26 C6,26 4,22 6,19 C4,16 7,12 11,13 C13,9 19,8 22,11 C25,9 29,12 28,16 C32,17 32,22 29,25 C26,27 22,26 19,26 Z" 
+                    fill="#EFE7F2" stroke="#9B8AA5" stroke-width="1.2"/>
+              <!-- 蜷成一团的酣睡白猫 -->
+              <ellipse cx="17" cy="20" rx="6" ry="4.5" fill="#FFFDF9" stroke="#786882" stroke-width="0.9"/>
+              <circle cx="13" cy="18" r="3.2" fill="#FFFDF9" stroke="#786882" stroke-width="0.8"/>
+              <!-- 弯弯闭合睫毛 -->
+              <path d="M12,19 Q13,20 14,19" stroke="#786882" stroke-width="1" fill="none"/>
+              <!-- 缓缓飘起的呼噜泡泡 -->
+              <circle cx="24" cy="12" r="1.5" fill="#C7B5D4" opacity="0.6"/>
+              <circle cx="27" cy="8" r="2.2" fill="#C7B5D4" opacity="0.8"/>
+            </svg>
+            <span class="stamp-name">疲惫</span>
+          </button>
+
+          <!-- 4. 期待：初绽露珠金星嫩芽 -->
+          <button class="stamp-btn" data-mood="期待" title="期待 · 萌发新生">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 松软泥土小丘 -->
+              <ellipse cx="18" cy="28" rx="10" ry="3.5" fill="#DECBB7"/>
+              <!-- 嫩绿新芽茎部 -->
+              <path d="M18,27 Q17,20 18,14" stroke="#708A66" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <!-- 两片舒展的小嫩叶 -->
+              <path d="M18,18 C13,16 11,12 13,11 C15,11 17,14 18,18 Z" fill="#A3B899" stroke="#527047" stroke-width="0.8"/>
+              <path d="M18,16 C23,14 25,10 23,9 C21,9 19,12 18,16 Z" fill="#C8D5C4" stroke="#527047" stroke-width="0.8"/>
+              <!-- 叶尖晶莹露珠与金星 -->
+              <circle cx="13" cy="10" r="3.5" fill="rgba(255,255,255,0.85)" stroke="#688C5C" stroke-width="0.8"/>
+              <polygon points="13,8 14,9.5 15.5,10 14,10.5 13,12 12,10.5 10.5,10 12,9.5" fill="#F5A623"/>
+            </svg>
+            <span class="stamp-name">期待</span>
+          </button>
+
+          <!-- 5. 难过：避雨小伞耷耳猫 -->
+          <button class="stamp-btn" data-mood="难过" title="难过 · 给你撑伞">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 细雨微波 -->
+              <line x1="6" y1="4" x2="4" y2="8" stroke="#8FAEC4" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+              <line x1="31" y1="5" x2="29" y2="9" stroke="#8FAEC4" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+              <!-- 莫兰迪蓝小雨伞 -->
+              <path d="M8,17 C8,9 28,9 28,17 C25,16 23,17 21,17 C19,16 17,17 15,17 C13,16 10,17 8,17 Z" 
+                    fill="#B2CDE0" stroke="#5F88A5" stroke-width="1.3"/>
+              <!-- 伞柄与弯钩 -->
+              <line x1="18" y1="7" x2="18" y2="28" stroke="#5F88A5" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M18,28 Q18,32 15,31" stroke="#5F88A5" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <!-- 伞下一只委屈耷耳小猫头 -->
+              <ellipse cx="18" cy="22" rx="4.5" ry="4" fill="#FFFDF9" stroke="#8D7B70" stroke-width="0.8"/>
+              <!-- 耷拉的小耳朵 -->
+              <path d="M14,20 L11,22 L14,23 Z" fill="#F4DFE4" stroke="#8D7B70" stroke-width="0.6"/>
+              <path d="M22,20 L25,22 L22,23 Z" fill="#F4DFE4" stroke="#8D7B70" stroke-width="0.6"/>
+              <!-- 眼角水滴泪光 -->
+              <circle cx="16.5" cy="22" r="0.7" fill="#433B4A"/>
+              <circle cx="19.5" cy="22" r="0.7" fill="#433B4A"/>
+              <circle cx="20.5" cy="23.5" r="0.8" fill="#4A90E2"/>
+            </svg>
+            <span class="stamp-name">难过</span>
+          </button>
+
+          <!-- 6. 焦虑：解开毛线团小猫爪 -->
+          <button class="stamp-btn" data-mood="焦虑" title="焦虑 · 慢慢理清">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 羊毛线团轮廓与纹理 -->
+              <circle cx="17" cy="19" r="10" fill="#E8D5D5" stroke="#B57E7E" stroke-width="1.3"/>
+              <path d="M10,16 Q17,14 24,18 M9,20 Q16,24 23,17 M13,12 Q20,20 18,28" stroke="#B57E7E" stroke-width="1.2" fill="none"/>
+              <!-- 舒展开来的弯曲散落毛线尾巴 -->
+              <path d="M25,22 Q32,24 29,30 Q26,33 33,33" stroke="#B57E7E" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+              <!-- 轻轻抚按在上面的白白小猫爪 -->
+              <ellipse cx="14" cy="13" rx="4" ry="3" fill="#FFFDF9" stroke="#8D7B70" stroke-width="0.8"/>
+              <circle cx="12" cy="11.5" r="1" fill="#F4A7B9"/>
+              <circle cx="14" cy="11" r="1" fill="#F4A7B9"/>
+              <circle cx="16" cy="11.5" r="1" fill="#F4A7B9"/>
+            </svg>
+            <span class="stamp-name">焦虑</span>
+          </button>
+
+          <!-- 7. 感恩：托心发光珍珠月桂手 -->
+          <button class="stamp-btn" data-mood="感恩" title="感恩 · 满怀欢喜">
+            <svg class="stamp-art-svg" viewBox="0 0 36 36">
+              <!-- 两侧月桂嫩叶 -->
+              <path d="M6,22 Q7,14 12,9" stroke="#708A66" stroke-width="1.2" fill="none"/>
+              <circle cx="7" cy="18" r="1.8" fill="#C8D5C4"/>
+              <circle cx="10" cy="13" r="1.8" fill="#C8D5C4"/>
+              <path d="M30,22 Q29,14 24,9" stroke="#708A66" stroke-width="1.2" fill="none"/>
+              <circle cx="29" cy="18" r="1.8" fill="#C8D5C4"/>
+              <circle cx="26" cy="13" r="1.8" fill="#C8D5C4"/>
+              <!-- 捧起的小手掌心 -->
+              <path d="M11,28 Q15,31 18,30 Q21,31 25,28 C23,24 13,24 11,28 Z" fill="#FFF4EE" stroke="#C9BDB8" stroke-width="1"/>
+              <!-- 散发暖光的粉晶爱心珍珠 -->
+              <path d="M18,13 C15,8 8,13 11,20 C13,24 18,27 18,27 C18,27 23,24 25,20 C28,13 21,8 18,13 Z" 
+                    fill="#F7C6CF" stroke="#D47888" stroke-width="1.2"/>
+              <circle cx="15.5" cy="15.5" r="1.5" fill="#FFF"/>
+            </svg>
+            <span class="stamp-name">感恩</span>
+          </button>
+        </div>
+
+        <div class="journal-footer">
+          <button class="btn" id="saveBtn">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            封存入册
+          </button>
+          <span class="stamp-feedback" id="saveMsg"></span>
+        </div>
+      </div>
+
+      <!-- 历史日记便签流 -->
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <!-- 底部固定手账导航 -->
+  <nav class="tabbar">
+    <button class="tab active" data-page="tarot">
+      <svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M12 8v8m-4-4h8"/></svg>
+      <span class="tab-text">抽塔罗</span>
+    </button>
+    <button class="tab" data-page="diary">
+      <svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z"/></svg>
+      <span class="tab-text">日记本</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+"use strict";
+
+/* ================= 22 张大阿卡纳手绘符号与诗意文案 ================= */
+const CARDS = [
+  {name:"愚人",en:"The Fool",symPath:`<path d="M12 4 C15 4 19 8 18 14 C17 19 13 20 12 20 C11 20 7 19 6 14 C5 8 9 4 12 4 Z" fill="none" stroke="#B57E7E" stroke-width="2"/><path d="M12 2v4m-5 4L2 8m15 2l5-2" stroke="#D4A5A5" stroke-width="1.8" stroke-linecap="round"/>`,a:"你站在悬崖边缘，口袋里装着风。世界是一张还没折过的纸，每一步都是第一次落笔。别怕弄脏鞋，春天就是从泥泞里开始的。",b:"今天给自己买一样没用但让你眼睛发亮的小东西吧，比如一枚小胸针或一根新头绳。"},
+  {name:"魔术师",en:"The Magician",symPath:`<circle cx="12" cy="12" r="8" fill="none" stroke="#B57E7E" stroke-width="2"/><path d="M12 6l2 4 4 2-4 2-2 4-2-4-4-2 4-2z" fill="#E2CFA8"/>`,a:"桌面上四样工具静静躺着，像四颗等待被唤醒的星星。你不必向外寻找魔法，你的手指本身就是咒语。今天，试着相信「我可以」。",b:"今天给自己泡一杯平时舍不得喝的好茶或咖啡，坐在窗边慢慢喝完。"},
+  {name:"女祭司",en:"The High Priestess",symPath:`<path d="M18 15.5A7.5 7.5 0 1 1 10.5 4a6 6 0 0 0 7.5 11.5z" fill="#B8A8C4" stroke="#786882" stroke-width="1.5"/><circle cx="12" cy="12" r="2" fill="#FFF"/>`,a:"月光落在紧闭的门上，钥匙在你心里。有些答案不需要被说出来，它们像种子一样在黑暗中发芽。安静，是最响亮的回答。",b:"今晚把手机放去客厅充电，给自己一场不被打扰的、沉沉的好觉吧。"},
+  {name:"皇后",en:"The Empress",symPath:`<path d="M12 4a5 5 0 0 1 5 5c0 4-5 11-5 11S7 13 7 9a5 5 0 0 1 5-5z" fill="#E8D5D5" stroke="#B57E7E" stroke-width="1.8"/><circle cx="12" cy="9" r="2" fill="#FFF"/>`,a:"花园里的苹果熟了，藤蔓在无人看见的地方悄悄生长。你不需要急着证明自己，像土地一样慷慨地接纳阳光和雨水就好。",b:"今天给自己买一小束鲜花，插在床头，或者买一块看起来很好吃的蛋糕。"},
+  {name:"皇帝",en:"The Emperor",symPath:`<path d="M4 18h16l-3-10-5 4-5-4z" fill="#E2CFA8" stroke="#A88B52" stroke-width="1.8" stroke-linejoin="round"/><line x1="4" y1="20" x2="20" y2="20" stroke="#A88B52" stroke-width="2"/>`,a:"高山不会为风动摇，但它也允许云雾从腰间流过。稳固不是僵硬，而是给自己搭一座可以安心做梦的桥。",b:"今天把拖了很久的一件小事做完，然后心安理得地奖励自己一个长长的午觉。"},
+  {name:"教皇",en:"The Hierophant",symPath:`<path d="M12 3v18M7 7h10M9 11h6M8 15h8" stroke="#708A66" stroke-width="2" stroke-linecap="round"/>`,a:"古老的智慧像一盏灯，在迷雾中为你亮着温暖的光。那些前人走过的路，不是为了限制你，而是为了让你知道：你并不孤单。",b:"今天给自己煮一碗热腾腾的汤，或者给很久没联系的老朋友打个电话。"},
+  {name:"恋人",en:"The Lovers",symPath:`<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#F5EBEB" stroke="#B57E7E" stroke-width="1.8"/>`,a:"两条路在晨雾中分岔，但你的心知道该往哪走。真诚不是选择，而是唯一不会迷路的方式。去牵那只伸向你的手吧。",b:"今天认真洗个头，吹个喜欢的发型，在镜子前多看看自己，对自己说声「真好看」。"},
+  {name:"战车",en:"The Chariot",symPath:`<rect x="4" y="6" width="16" height="10" rx="3" fill="none" stroke="#708A66" stroke-width="2"/><circle cx="7" cy="18" r="3" stroke="#708A66" stroke-width="1.5"/><circle cx="17" cy="18" r="3" stroke="#708A66" stroke-width="1.5"/><path d="M12 9v4" stroke="#708A66" stroke-width="2"/>`,a:"两匹不同颜色的马，朝着同一个黎明奔跑。当你不再拉扯自己，而是让意志成为缰绳，远方就会向你低头。",b:"今天出门前喷点喜欢的香水，或者戴上那件让你心情变好的小饰品吧。"},
+  {name:"力量",en:"Strength",symPath:`<path d="M8 12c-2.2 0-4-1.8-4-4s1.8-4 4-4c1.5 0 2.8.8 3.5 2C12.2 4.8 13.5 4 15 4c2.2 0 4 1.8 4 4s-1.8 4-4 4c-1.5 0-2.8-.8-3.5-2C10.8 11.2 9.5 12 8 12z" fill="none" stroke="#D4A5A5" stroke-width="2"/><path d="M8 18c3-2 5-2 8 0" stroke="#708A66" stroke-width="2" stroke-linecap="round"/>`,a:"狮子在你的掌心睡着了，不是因为征服，而是因为理解。最温柔的水，也能在石头上刻下痕迹。今天，用耐心代替用力。",b:"今天允许自己有一件事推到明天，现在先窝在沙发上，盖着毯子发一会儿呆。"},
+  {name:"隐者",en:"The Hermit",symPath:`<path d="M9 5h6v12H9z" fill="none" stroke="#A88B52" stroke-width="1.8"/><path d="M12 2v3m-3 12l-2 4h10l-2-4" stroke="#A88B52" stroke-width="1.8"/><circle cx="12" cy="11" r="2" fill="#F6E2B8"/>`,a:"你提着一盏灯，在雪地里走得很慢。但慢不是落后，而是让光有足够的时间照亮脚下的路。有些答案，只在独处时发光。",b:"今天去附近的公园或树林里，一个人静静地走十分钟，不带耳机，只听风声。"},
+  {name:"命运之轮",en:"Wheel of Fortune",symPath:`<circle cx="12" cy="12" r="9" fill="none" stroke="#B57E7E" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="#708A66" stroke-width="1.5"/><path d="M12 3v6m0 6v6M3 12h6m6 0h6" stroke="#D4C4A8" stroke-width="1.5"/>`,a:"季节在轮转，潮水在涨落，你也在变化。不必抓紧正在流走的东西，空出的手才能接住新的礼物。信任转动本身。",b:"今天去一家从没去过的店，点一样你好奇很久的东西，比如一杯新口味的饮料。"},
+  {name:"正义",en:"Justice",symPath:`<path d="M12 3v17M6 7h12" stroke="#708A66" stroke-width="2" stroke-linecap="round"/><path d="M3 13l3-6 3 6c0 1.5-1.3 3-3 3s-3-1.5-3-3zm12 0l3-6 3 6c0 1.5-1.3 3-3 3s-3-1.5-3-3z" fill="none" stroke="#708A66" stroke-width="1.5"/>`,a:"天平的两端，一端是你给出的，一端是你收到的。世界从不亏欠认真生活的人。今天，让每一件小事都经得起自己审视。",b:"今天对自己诚实一次，然后奖励自己一杯最想喝的奶茶，不加糖也行。"},
+  {name:"倒吊人",en:"The Hanged Man",symPath:`<path d="M6 3h12M12 3v10l-4 4m4-4l4 4" stroke="#B8A8C4" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="3" fill="none" stroke="#786882" stroke-width="1.5"/>`,a:"你倒挂着，看见的世界是颠倒的，却因此看见了别人看不见的风景。有时候，停下来不是放弃，而是换一种姿势飞翔。",b:"今天刻意什么都不安排，就让自己无所事事地过一小时，发呆也好，躺着也好。"},
+  {name:"死神",en:"Death",symPath:`<path d="M12 3c-4 0-7 4-7 9 0 6 7 10 7 10s7-4 7-10c0-5-3-9-7-9z" fill="none" stroke="#7D7070" stroke-width="1.8"/><path d="M12 6v13m-3-8l3 3 3-3" stroke="#7D7070" stroke-width="1.5"/>`,a:"一片叶子落下，不是树的终结，而是风得到了自由。结束从来不是消失，只是换了一种存在的方式。松开手，让该走的走。",b:"今天清理掉一件旧物，然后给自己腾出一个舒服的角落，放一盏小灯或一个靠垫。"},
+  {name:"节制",en:"Temperance",symPath:`<path d="M6 5h12l-2 6c-1 3-3 5-4 5s-3-2-4-5z" fill="none" stroke="#708A66" stroke-width="1.8"/><path d="M8 18h8m-4-2v4" stroke="#708A66" stroke-width="1.8"/>`,a:"两股水流在杯子里相遇，不争吵，不淹没彼此。生活最好的状态，不是极端的燃烧，而是持久的温暖。今天，找到你的平衡点。",b:"今天三餐里至少有一顿，吃你真正想吃的东西，不是「应该吃」的东西。"},
+  {name:"恶魔",en:"The Devil",symPath:`<path d="M8 8l4-4 4 4v4H8z" fill="none" stroke="#B57E7E" stroke-width="1.8"/><circle cx="12" cy="16" r="4" fill="none" stroke="#B57E7E" stroke-width="1.8"/><path d="M10 16h4" stroke="#B57E7E" stroke-width="1.5"/>`,a:"锁链是松的，只是你习惯了它的重量。那些让你上瘾的、恐惧的、放不下的，其实从未真正绑住你。低头看看，钥匙就在地上。",b:"今天少刷半小时手机，用那时间给自己好好泡个热水澡，加点浴盐或精油吧。"},
+  {name:"塔",en:"The Tower",symPath:`<path d="M7 21l2-14 3-3 3 3 2 14z" fill="none" stroke="#B57E7E" stroke-width="1.8"/><path d="M12 4l-2 4h4l-2 4" stroke="#E2CFA8" stroke-width="2"/>`,a:"雷声震碎了玻璃，但雨水洗亮了窗。那些突然倒塌的东西，本就不该成为你的屋顶。废墟之上，才是真实的天空。",b:"今天如果感到烦躁，就放下手头的事，去洗把脸、敷张面膜，让自己松下来。"},
+  {name:"星星",en:"The Star",symPath:`<polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9" fill="#FFFDF9" stroke="#E2CFA8" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="#F6E2B8"/>`,a:"夜很深了，但还有光。不是太阳那种耀眼的光，而是遥远却坚定的、属于你的光。把伤口摊开给风，风会带走疼痛，留下平静。",b:"今晚睡前泡个热水脚，然后带着一个温柔的念头入睡，比如「明天会更好的」。"},
+  {name:"月亮",en:"The Moon",symPath:`<path d="M16 4a8 8 0 1 0 0 16 8 8 0 0 1 0-16z" fill="#DFCEE2" stroke="#786882" stroke-width="1.8"/><circle cx="8" cy="10" r="1.5" fill="#FFF"/><circle cx="10" cy="15" r="1" fill="#FFF"/>`,a:"迷雾里的路标是模糊的，但你的脚步是清晰的。那些让你害怕的影子，只是光还没照到的地方。继续走，天快亮了。",b:"今天把焦虑写下来折好收进抽屉，然后给自己点一份喜欢的宵夜，慢慢吃。"},
+  {name:"太阳",en:"The Sun",symPath:`<circle cx="12" cy="12" r="5" fill="#F6E2B8" stroke="#E2CFA8" stroke-width="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3m-3.5-6.5l-2 2m-7 7l-2 2m0-11l2 2m7 7l2 2" stroke="#E2CFA8" stroke-width="2" stroke-linecap="round"/>`,a:"像小时候晒过太阳的棉被，像冰淇淋融化的第一滴甜。快乐不需要很复杂，它就在你伸手可及的地方。今天，允许自己大笑。",b:"今天穿上最舒服的衣服，出去晒十分钟太阳，让身上暖洋洋的，像晒过的棉被。"},
+  {name:"审判",en:"Judgement",symPath:`<path d="M6 12h8l4-4v8l-4-4z" fill="none" stroke="#708A66" stroke-width="1.8"/><path d="M6 10v4m-3 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="#708A66" stroke-width="1.5"/>`,a:"有声音在敲你的门，那是过去的你在呼唤现在的你。不是责备，而是提醒：你早已拥有飞翔的羽毛，只是忘了展开。原谅自己，然后起飞。",b:"今天对着镜子笑一下，然后给自己买个小头饰或小零食，犒赏一下这个努力的你。"},
+  {name:"世界",en:"The World",symPath:`<ellipse cx="12" cy="12" rx="9" ry="6" fill="none" stroke="#708A66" stroke-width="2" transform="rotate(-30 12 12)"/><circle cx="12" cy="12" r="3" fill="#E8D5D5" stroke="#B57E7E" stroke-width="1.5"/>`,a:"你走过了很长的路，现在站在一个圆圈的终点，也是起点。所有的经历都变成了你脚下的舞步。转个圈吧，世界在为你鼓掌。",b:"今天回想一件你做得很好的事，然后给自己安排一场小小的犒赏，比如看部电影或泡个澡。"}
+];
+
+/* ================= 元素引用 ================= */
+const $ = id => document.getElementById(id);
+const pages = { tarot: $("pageTarot"), diary: $("pageDiary") };
+const card3d = $("card3d"), cardInner = $("cardInner"), guide = $("guide"), cardShimmer = $("cardShimmer");
+const drawBtn = $("drawBtn"), againBtn = $("againBtn"), reading = $("reading");
+const fSymHolder = $("fSymHolder"), fName = $("fName"), fEn = $("fEn"), readA = $("readA"), readB = $("readB"), readingTitle = $("readingTitle");
+const speech = $("speech"), catSvg = $("catSvg"), catHolder = $("catHolder"), stageTag = $("stageTag");
+const energyVal = $("energyVal"), moodVal = $("moodVal"), energyBar = $("energyBar"), moodBar = $("moodBar");
+const invFlower = $("invFlower"), invStar = $("invStar"), feedBtn = $("feedBtn");
+const diaryInput = $("diaryInput"), wordCount = $("wordCount"), saveBtn = $("saveBtn"), saveMsg = $("saveMsg");
+const moodRow = $("moodRow"), timeline = $("timeline");
+let selectedMood = "";
+
+/* ================= 高精水彩灵猫矢量图腾（大眼睛+长睫毛+星芒+紫蝴蝶结） ================= */
+const CAT_SVG_BODY = `
+<!-- 尾巴 -->
+<path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+<path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#FFFDF9" stroke-width="3" stroke-linecap="round"/>
+<!-- 身体 -->
+<ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+<ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+<ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+<!-- 脑袋 -->
+<circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+<!-- 耳朵 -->
+<path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+<path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+<!-- 莫兰迪紫大蝴蝶结（带褶皱与珍珠中轴） -->
+<g transform="translate(55, 27)">
+  <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M-18,5 C-12,2 -6,2 -2,0" stroke="#B8A8C4" stroke-width="1.5" fill="none"/>
+  <path d="M18,5 C12,2 6,2 2,0" stroke="#B8A8C4" stroke-width="1.5" fill="none"/>
+  <!-- 中间温润小珍珠 -->
+  <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+  <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+</g>
+<!-- 粉嫩腮红 -->
+<circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+<circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+<!-- 细胡须 -->
+<g stroke="#D1C3BE" stroke-width="1.8" stroke-linecap="round" opacity="0.75">
+  <path d="M16,86 L4,82"/><path d="M16,92 L2,92"/><path d="M17,98 L5,102"/>
+  <path d="M94,86 L106,82"/><path d="M94,92 L108,92"/><path d="M93,98 L105,102"/>
+</g>
+`;
+
+const CAT_FACES = {
+  normal: `
+<!-- 闪亮大眼（渐变深眸 + 水光高光 + 金芒八角星） -->
+<ellipse cx="40" cy="72" rx="10.5" ry="11.5" fill="#433B4A"/>
+<ellipse cx="70" cy="72" rx="10.5" ry="11.5" fill="#433B4A"/>
+<ellipse cx="40" cy="75" rx="8" ry="6" fill="#5F5368" opacity="0.6"/>
+<ellipse cx="70" cy="75" rx="8" ry="6" fill="#5F5368" opacity="0.6"/>
+<circle cx="43" cy="68" r="3.6" fill="#FFFDF9"/>
+<circle cx="73" cy="68" r="3.6" fill="#FFFDF9"/>
+<!-- 瞳孔闪烁星芒 -->
+<g class="eye-star" style="transform-box:fill-box;transform-origin:center;animation:starTwinkle 2.4s ease-in-out infinite;">
+  <path d="M40,73 l1.8,3.2 l3.2,.5 l-2.4,2.2 l.7,3.2 l-2.9,-1.6 l-2.9,1.6 l.7,-3.2 l-2.4,-2.2 l3.2,-.5 Z" fill="#FDF3D8"/>
+  <path d="M70,73 l1.8,3.2 l3.2,.5 l-2.4,2.2 l.7,3.2 l-2.9,-1.6 l-2.9,1.6 l.7,-3.2 l-2.4,-2.2 l3.2,-.5 Z" fill="#FDF3D8"/>
+</g>
+<!-- 优美上翘长假睫毛 -->
+<path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+<!-- 鼻尖与小嘴巴 -->
+<path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+<path d="M55,88 v3" stroke="#CFBEB8" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+`,
+  happy: `
+<!-- 幸福月牙眯眼 -->
+<path d="M30,73 Q40,62 50,73" fill="none" stroke="#433B4A" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M60,73 Q70,62 80,73" fill="none" stroke="#433B4A" stroke-width="3.5" stroke-linecap="round"/>
+<path d="M30,66 Q33,56 26,51 M49,67 Q52,57 57,52" stroke="#5E5252" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+<path d="M80,66 Q77,56 84,51 M61,67 Q58,57 53,52" stroke="#5E5252" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+<path d="M48,87 q7,8 14,0" stroke="#CFBEB8" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M55,83 l3.5,3.5 l-7,0 Z" fill="#E8A6B6"/>
+`,
+  blink: `
+<!-- 温柔闭眼眨睫毛 -->
+<path d="M30,73 Q40,78 50,73" fill="none" stroke="#433B4A" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M60,73 Q70,78 80,73" fill="none" stroke="#433B4A" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M30,66 Q33,56 26,51 M49,67 Q52,57 57,52" stroke="#5E5252" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+<path d="M80,66 Q77,56 84,51 M61,67 Q58,57 53,52" stroke="#5E5252" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+<path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+`
+};
+
+function renderCatSVG(id, faceKey) {
+  const el = $(id);
+  if (!el) return;
+  el.innerHTML = CAT_SVG_BODY + (CAT_FACES[faceKey] || CAT_FACES.normal);
+}
+
+/* ================= 柔和金粉微粒 Canvas (Ambient Dust) ================= */
+const dustCanvas = $("starDustCanvas");
+const dctx = dustCanvas.getContext("2d");
+let dustParticles = [];
+
+function resizeDustCanvas() {
+  dustCanvas.width = window.innerWidth;
+  dustCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeDustCanvas);
+resizeDustCanvas();
+
+for (let i = 0; i < 28; i++) {
+  dustParticles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 0.8 + Math.random() * 1.8,
+    alpha: 0.2 + Math.random() * 0.5,
+    speedY: -0.2 - Math.random() * 0.3,
+    speedX: (Math.random() - 0.5) * 0.3,
+    pulse: Math.random() * Math.PI
+  });
+}
+
+function loopDust() {
+  dctx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+  dustParticles.forEach(p => {
+    p.y += p.speedY;
+    p.x += p.speedX;
+    p.pulse += 0.03;
+    const a = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
+
+    if (p.y < -10) { p.y = dustCanvas.height + 10; p.x = Math.random() * dustCanvas.width; }
+    if (p.x < -10) p.x = dustCanvas.width + 10;
+    if (p.x > dustCanvas.width + 10) p.x = -10;
+
+    dctx.beginPath();
+    dctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    dctx.fillStyle = `rgba(226, 207, 168, ${a})`;
+    dctx.fill();
+  });
+  requestAnimationFrame(loopDust);
+}
+loopDust();
+
+/* ================= Web Audio 空灵水晶风铃与纸张音效 ================= */
+let AC = null;
+function ensureAC() {
+  if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+  if (AC.state === "suspended") AC.resume();
+  return AC;
+}
+
+function chime(freq, dur, gainVal, type = "sine") {
+  try {
+    const a = ensureAC();
+    const osc = a.createOscillator();
+    const gain = a.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, a.currentTime);
+    gain.gain.setValueAtTime(0.0001, a.currentTime);
+    gain.gain.linearRampToValueAtTime(gainVal, a.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+    osc.connect(gain).connect(a.destination);
+    osc.start();
+    osc.stop(a.currentTime + dur + 0.05);
+  } catch (e) {}
+}
+
+// 塔罗翻牌水晶风铃空灵和弦
+function playTarotChime() {
+  const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+  notes.forEach((n, i) => setTimeout(() => chime(n, 1.2, 0.14), i * 85));
+}
+
+// 洗牌柔和沙沙声
+function playShuffleSound() {
+  const notes = [330, 392, 440, 523];
+  notes.forEach((n, i) => setTimeout(() => chime(n, 0.12, 0.08, "triangle"), i * 140));
+}
+
+// 火漆盖章木质敲击声与风铃音
+function playStampSound() {
+  chime(220, 0.12, 0.35, "triangle");
+  setTimeout(() => chime(880, 0.7, 0.15), 60);
+  setTimeout(() => chime(1174.66, 0.9, 0.12), 140);
+}
+
+// 猫咪甜糯喵呜与呼噜波纹
+function playPurrSound() {
+  chime(587.33, 0.18, 0.2, "triangle");
+  setTimeout(() => chime(783.99, 0.22, 0.16, "sine"), 90);
+  setTimeout(() => chime(987.77, 0.35, 0.12, "sine"), 180);
+}
+
+/* ================= 守护喵交互 ================= */
+const CAT_GREETINGS = [
+  "呼噜呼噜～你来啦",
+  "今天也要温柔对自己哦",
+  "你的存在是珍珠呀",
+  "摸摸你的小脑袋",
+  "今天有什么好消息吗？"
+];
+
+function triggerSideCat(side) {
+  playPurrSound();
+  renderCatSVG("tarotCat" + side, "happy");
+  const b = $("tarotBubble" + side);
+  b.textContent = CAT_GREETINGS[Math.floor(Math.random() * CAT_GREETINGS.length)];
+  b.classList.add("show");
+  setTimeout(() => {
+    b.classList.remove("show");
+    renderCatSVG("tarotCat" + side, "normal");
+  }, 1600);
+}
+$("tarotCatWrap").addEventListener("click", () => triggerSideCat(""));
+$("tarotCatWrapR").addEventListener("click", () => triggerSideCat("R"));
+
+/* ================= 塔罗牌抽选与流光仪式感 ================= */
+let isTarotBusy = false;
+
+function drawCard() {
+  if (isTarotBusy) return;
+  isTarotBusy = true;
+  
+  const idx = Math.floor(Math.random() * CARDS.length);
+  const cardData = CARDS[idx];
+
+  reading.style.display = "none";
+  guide.textContent = "✦ 命运齿轮转动，正在感应……";
+  card3d.classList.add("shuffle", "shining");
+  playShuffleSound();
+
+  setTimeout(() => {
+    card3d.classList.remove("shuffle");
+    playTarotChime();
+
+    // 牌面信息注入手绘 SVG
+    fSymHolder.innerHTML = `<svg class="f-sym-svg" viewBox="0 0 24 24">${cardData.symPath}</svg>`;
+    fName.textContent = cardData.name;
+    fEn.textContent = cardData.en;
+
+    // 3D 翻牌
+    cardInner.classList.add("flipped");
+
+    // 牌面流光
+    setTimeout(() => {
+      cardShimmer.classList.add("sweep");
+      setTimeout(() => cardShimmer.classList.remove("sweep"), 1000);
+    }, 400);
+
+    setTimeout(() => {
+      card3d.classList.remove("shining");
+      readingTitle.textContent = `【${cardData.name}】${cardData.en}`;
+      readA.textContent = cardData.a;
+      readB.textContent = cardData.b;
+      reading.style.display = "block";
+      guide.textContent = "今日的神谕信笺已启封 ✦";
+      isTarotBusy = false;
+
+      renderCatSVG("tarotCat", "happy");
+      renderCatSVG("tarotCatR", "happy");
+      setTimeout(() => {
+        renderCatSVG("tarotCat", "normal");
+        renderCatSVG("tarotCatR", "normal");
+      }, 2000);
+    }, 850);
+  }, 1400);
+}
+
+drawBtn.addEventListener("click", drawCard);
+card3d.addEventListener("click", drawCard);
+
+againBtn.addEventListener("click", () => {
+  if (isTarotBusy) return;
+  reading.style.display = "none";
+  guide.textContent = "深呼吸，感受心中的念头……";
+  cardInner.classList.remove("flipped");
+});
+
+/* ================= 存档与养成逻辑 ================= */
+const STORAGE_KEY = "zz-cat-house-v2";
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function dayDiff(a, b) {
+  return Math.round((new Date(a) - new Date(b)) / 86400000);
+}
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem("zz-cat-house") || "{}");
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(D));
+  } catch (e) {}
+}
+
+const D = Object.assign({
+  diaries: [],
+  energy: 0,
+  mood: 85,
+  lastDiary: "",
+  inv: { flower: 0, star: 0 }
+}, loadData());
+
+// 心情随天数自然流逝结算
+(function settleMood() {
+  if (D.lastDiary) {
+    const diff = dayDiff(todayStr(), D.lastDiary);
+    if (diff > 0) {
+      D.mood = Math.max(0, D.mood - 2 * diff);
+      saveData();
+    }
+  }
+})();
+
+const STAGES = [
+  [0, "幼猫期", 0.94],
+  [31, "成长期", 1.0],
+  [81, "成熟期", 1.06],
+  [151, "完全体", 1.14]
+];
+
+function updatePetUI() {
+  D.energy = Math.max(0, D.energy);
+  D.mood = Math.max(0, Math.min(100, D.mood));
+  energyVal.textContent = D.energy;
+  moodVal.textContent = D.mood;
+
+  // 根据能量点数动态点亮珍珠许愿瓶内部的水晶珍珠
+  const pearls = document.querySelectorAll("#bottlePearls circle");
+  const activeCount = Math.min(pearls.length, Math.floor(D.energy / 15) + 1);
+  pearls.forEach((p, i) => {
+    if (i < activeCount) {
+      p.style.opacity = "1";
+      p.style.filter = "drop-shadow(0 0 4px #FFE5A3)";
+    } else {
+      p.style.opacity = "0.2";
+      p.style.filter = "none";
+    }
+  });
+
+  const stageDesc = $("energyStageDesc");
+  if (stageDesc) {
+    if (D.energy >= 151) stageDesc.textContent = "星辰完全体 · 永恒守护";
+    else if (D.energy >= 81) stageDesc.textContent = "亭亭玉立 · 成熟温存";
+    else if (D.energy >= 31) stageDesc.textContent = "抽芽初长 · 快乐无忧";
+    else stageDesc.textContent = "时光初蕴 · 娇憨幼猫";
+  }
+
+  invFlower.textContent = D.inv.flower;
+  invStar.textContent = D.inv.star;
+
+  let st = STAGES[0];
+  for (const s of STAGES) {
+    if (D.energy >= s[0]) st = s;
+  }
+  stageTag.textContent = st[1];
+  catSvg.style.transform = `scale(${st[2]})`;
+  saveData();
+}
+
+const PET_LINES = [
+  "呼噜呼噜……有你陪伴的每一天，都像含着一颗温热的薄荷糖。",
+  "你的存在对我而言，真的是闪闪发光的珍珠呀。",
+  "今天如果累了，就什么都别想，好好抱抱自己吧。",
+  "闻到了花香……你今天也有好好照顾自己的心情吗？",
+  "我在你的心房里打了个滚，软软暖暖的～"
+];
+
+function speak(text) {
+  speech.textContent = text;
+  speech.style.animation = "none";
+  void speech.offsetWidth;
+  speech.style.animation = "riseSheet 0.35s ease";
+}
+
+catHolder.addEventListener("click", () => {
+  playPurrSound();
+  renderCatSVG("catSvg", "happy");
+  setTimeout(() => renderCatSVG("catSvg", "normal"), 1800);
+  speak(PET_LINES[Math.floor(Math.random() * PET_LINES.length)]);
+});
+
+// 喂食
+feedBtn.addEventListener("click", () => {
+  if (D.inv.flower + D.inv.star <= 0) {
+    speak("书匣里还没有小花和星星呢，写下一段日记来采撷它们吧～");
+    return;
+  }
+  if (D.inv.flower > 0) D.inv.flower--;
+  else D.inv.star--;
+
+  D.energy += 5;
+  D.mood = Math.min(100, D.mood + 10);
+  playPurrSound();
+  renderCatSVG("catSvg", "happy");
+  setTimeout(() => renderCatSVG("catSvg", "normal"), 2000);
+  speak("嗷呜～吃饱啦！能量与幸福感都悄悄升起来了！");
+  updatePetUI();
+});
+
+/* ================= 手账日记本交互与火漆盖印动效 ================= */
+diaryInput.addEventListener("input", () => {
+  const n = diaryInput.value.length;
+  wordCount.textContent = n + " / 200";
+});
+
+moodRow.addEventListener("click", e => {
+  const b = e.target.closest(".stamp-btn");
+  if (!b) return;
+  document.querySelectorAll(".stamp-btn").forEach(m => m.classList.remove("active"));
+  selectedMood = b.dataset.mood === selectedMood ? "" : b.dataset.mood;
+  if (selectedMood) {
+    b.classList.add("active");
+    playStampSound();
+  }
+});
+
+function renderTimeline() {
+  timeline.innerHTML = "";
+  [...D.diaries].sort((a, b) => b.date.localeCompare(a.date)).forEach(item => {
+    const el = document.createElement("div");
+    el.className = "tl-sticky-note";
+    el.innerHTML = `
+      <div class="tl-sticky-tape"></div>
+      <div class="tl-header">
+        <span class="tl-date">${item.date}</span>
+        ${item.mood ? `<span class="tl-mood-badge">${item.mood}</span>` : ""}
+      </div>
+      <div class="tl-content"></div>
+    `;
+    el.querySelector(".tl-content").textContent = item.text;
+    el.addEventListener("click", () => el.classList.toggle("open"));
+    timeline.appendChild(el);
+  });
+}
+
+// 抛物线飞入珍珠罐动效
+function flyRewardMote(isFlower) {
+  const mote = document.createElement("div");
+  mote.className = "fly-mote";
+  mote.innerHTML = isFlower
+    ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="#E29B9B"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="#FFF"/></svg>`
+    : `<svg width="24" height="24" viewBox="0 0 24 24" fill="#E2CFA8"><polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9"/></svg>`;
+
+  const startX = window.innerWidth / 2 - 12;
+  const startY = window.innerHeight * 0.65;
+  mote.style.left = startX + "px";
+  mote.style.top = startY + "px";
+  mote.style.transform = "scale(0.3)";
+  document.body.appendChild(mote);
+
+  const targetRect = energyBar.getBoundingClientRect();
+  const targetX = targetRect.left + targetRect.width / 2;
+  const targetY = targetRect.top;
+
+  requestAnimationFrame(() => {
+    mote.style.transform = `translate(${targetX - startX}px, ${targetY - startY}px) scale(1.1)`;
+    mote.style.opacity = "0.9";
+    setTimeout(() => {
+      mote.remove();
+      energyBar.style.transform = "scale(1.05)";
+      setTimeout(() => energyBar.style.transform = "none", 200);
+    }, 850);
+  });
+}
+
+// 保存日记触发猫爪火漆封存仪式
+saveBtn.addEventListener("click", () => {
+  const text = diaryInput.value.trim();
+  if (!text) {
+    saveMsg.textContent = "写下一句话，也是给未来的信笺呀～";
+    setTimeout(() => saveMsg.textContent = "", 1800);
+    return;
+  }
+
+  // 记录存档
+  D.diaries.push({ date: todayStr(), text, mood: selectedMood });
+  D.energy += 10;
+  D.mood = Math.min(100, D.mood + 15);
+  D.lastDiary = todayStr();
+
+  const isFlower = Math.random() < 0.5;
+  if (isFlower) D.inv.flower++;
+  else D.inv.star++;
+
+  // 触发猫爪火漆印章全屏盖印
+  playStampSound();
+  const overlay = document.createElement("div");
+  overlay.className = "wax-seal-overlay";
+  overlay.innerHTML = `
+    <svg class="wax-seal" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="#B54646" stroke="#8F2D2D" stroke-width="4"/>
+      <circle cx="50" cy="50" r="39" fill="none" stroke="#D96E6E" stroke-width="1.5" stroke-dasharray="4 2"/>
+      <!-- 肉垫手绘猫爪印 -->
+      <ellipse cx="50" cy="62" rx="14" ry="11" fill="#FFFDF9" opacity="0.9"/>
+      <circle cx="34" cy="46" r="6" fill="#FFFDF9" opacity="0.9"/>
+      <circle cx="45" cy="40" r="6.5" fill="#FFFDF9" opacity="0.9"/>
+      <circle cx="55" cy="40" r="6.5" fill="#FFFDF9" opacity="0.9"/>
+      <circle cx="66" cy="46" r="6" fill="#FFFDF9" opacity="0.9"/>
+    </svg>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), 800);
+
+  // 抛物线飞入动效
+  setTimeout(() => flyRewardMote(isFlower), 400);
+
+  diaryInput.value = "";
+  wordCount.textContent = "0 / 200";
+  selectedMood = "";
+  document.querySelectorAll(".stamp-btn").forEach(m => m.classList.remove("active"));
+  saveMsg.textContent = isFlower ? "已盖印封存 · 获得一朵小花 🌸" : "已盖印封存 · 采撷一颗星芒 ✦";
+  setTimeout(() => saveMsg.textContent = "", 2400);
+
+  updatePetUI();
+  renderTimeline();
+  speak("日记已经珍藏好啦！今天的所有情绪，都被好好温柔接住了。");
+});
+
+/* ================= 页面平滑切换 ================= */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    const pg = tab.dataset.page;
+    Object.keys(pages).forEach(k => pages[k].classList.remove("active"));
+    pages[pg].classList.add("active");
+  });
+});
+
+/* ================= 初始化绘制 ================= */
+renderCatSVG("catSvg", "normal");
+renderCatSVG("tarotCat", "normal");
+renderCatSVG("tarotCatR", "normal");
+updatePetUI();
+renderTimeline();
+</script>
+</body>
+</html>

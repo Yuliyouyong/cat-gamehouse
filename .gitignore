@@ -1,0 +1,6 @@
+﻿.workbuddy/
+.skill/
+*.backup.html
+*_doc.txt
+*-prompt.txt
+*.tmp.*

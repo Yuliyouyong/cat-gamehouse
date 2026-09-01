@@ -1,0 +1,378 @@
+/* ==========================================================================
+   各个游戏视图组件样式 (dist/assets/games.css)
+   - 包含日记阁、点击器、猜数字、钓鱼、接鱼干、占星签等 7 个游戏
+   - 纯离线手账设计风格，自适应屏幕与触屏体验
+   ========================================================================== */
+
+.game-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 68px 16px 48px;
+  position: relative;
+  min-height: 100vh;
+}
+
+.game-card-panel {
+  background: var(--washi-base);
+  border: 2px solid var(--washi-border);
+  border-radius: 22px;
+  box-shadow: var(--shadow-warm);
+  padding: 24px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-title-bar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.game-title-bar h2 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  color: var(--pink-deep);
+}
+.game-title-bar p {
+  font-family: var(--font-reading);
+  font-size: 13px;
+  color: var(--green-deep);
+  margin-top: 4px;
+}
+
+/* ================= 游戏 1：珠珠日记屋 (House & Tarot & Diary) ================= */
+.tarot-stage-card {
+  width: 220px;
+  height: 330px;
+  margin: 16px auto;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.tarot-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(181, 126, 126, 0.25);
+}
+.tarot-card-inner.flipped { transform: rotateY(180deg); }
+.tarot-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.tarot-back {
+  background: linear-gradient(135deg, #708A66, #A3B899);
+  border: 3px solid #FFFDF9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #FFF;
+  font-family: var(--font-serif);
+  text-align: center;
+  padding: 20px;
+}
+.tarot-front {
+  background: #FFFDF9;
+  border: 3px solid var(--pink-soft);
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 14px;
+  text-align: center;
+}
+.tarot-front-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--pink-deep);
+  margin-top: 8px;
+}
+.tarot-front-desc {
+  font-family: var(--font-reading);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-body);
+  margin-top: 10px;
+  flex: 1;
+}
+
+/* 日记活页本 */
+.journal-notebook {
+  background: #FAF6F0;
+  border: 1.5px solid #E8DFD5;
+  border-radius: 16px;
+  padding: 18px 16px;
+  margin-top: 20px;
+  position: relative;
+}
+.diary-textarea {
+  width: 100%;
+  height: 88px;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: var(--font-reading);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink-body);
+  outline: none;
+}
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.stamp-pill {
+  padding: 8px 6px;
+  background: #FFFDF9;
+  border: 1.5px solid var(--washi-border);
+  border-radius: 12px;
+  font-family: var(--font-reading);
+  font-size: 12px;
+  color: var(--ink-body);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.stamp-pill:active, .stamp-pill.active {
+  transform: scale(0.95);
+  border-color: var(--pink-deep);
+  background: var(--pink-pale);
+  color: var(--pink-deep);
+  font-weight: 700;
+}
+
+/* 灵猫抚育操作栏 */
+.cat-care-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--green-tint);
+  border: 1.5px solid var(--green-soft);
+  border-radius: 16px;
+  padding: 12px 18px;
+  margin-top: 16px;
+}
+.btn-snack {
+  padding: 8px 18px;
+  background: linear-gradient(180deg, #FAF1F1, var(--pink-soft));
+  border: 1.8px solid var(--pink-mid);
+  border-radius: 999px;
+  font-family: var(--font-reading);
+  font-size: 13px;
+  font-weight: 700;
+  color: #7D515D;
+  cursor: pointer;
+}
+
+/* ================= 游戏 2：喵喵点击器 (Clicker) ================= */
+.clicker-box {
+  text-align: center;
+  padding: 20px 0;
+}
+.clicker-cat-stage {
+  width: 170px;
+  height: 200px;
+  margin: 10px auto;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.clicker-cat-stage:active {
+  transform: scale(0.88);
+}
+.score-badge {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: #E08A2E;
+  margin-bottom: 6px;
+}
+.combo-banner {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: #FFF2DF;
+  color: #D97706;
+  font-family: var(--font-reading);
+  font-size: 12px;
+  font-weight: 700;
+}
+.flying-coin {
+  position: absolute;
+  pointer-events: none;
+  font-family: var(--font-reading);
+  font-weight: 700;
+  font-size: 18px;
+  color: #E08A2E;
+  animation: coinFloat 0.75s ease-out forwards;
+}
+@keyframes coinFloat {
+  0% { transform: translate(-50%, 0) scale(0.7); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx, 0px)), -54px) scale(1.3); opacity: 0; }
+}
+
+/* ================= 游戏 3：猫猫猜数字 (Guess) ================= */
+.guess-display {
+  background: #FFFDF9;
+  border: 2px solid var(--green-soft);
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.guess-number-current {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+.guess-history {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 12px 0;
+  min-height: 28px;
+}
+.history-tag {
+  padding: 3px 10px;
+  background: var(--washi-warm);
+  border-radius: 999px;
+  font-family: var(--font-reading);
+  font-size: 12px;
+  color: var(--ink-body);
+}
+/* 手绘 9 宫格小键盘 */
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 320px;
+  margin: 14px auto 0;
+}
+.keypad-btn {
+  height: 48px;
+  background: var(--washi-base);
+  border: 1.8px solid var(--washi-border);
+  border-radius: 14px;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+.keypad-btn:active {
+  transform: scale(0.92);
+  background: var(--green-pale);
+  border-color: var(--green-mid);
+}
+
+/* ================= 游戏 4 & 5：钓鱼与接鱼干 (Action Games) ================= */
+.action-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.hud-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--washi-warm);
+  border-radius: 999px;
+  font-family: var(--font-reading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-body);
+}
+.btn-pause {
+  padding: 6px 14px;
+  background: var(--washi-base);
+  border: 1.5px solid var(--pink-soft);
+  border-radius: 999px;
+  font-family: var(--font-reading);
+  font-size: 12.5px;
+  color: var(--pink-deep);
+  cursor: pointer;
+}
+
+.canvas-wrap {
+  width: 100%;
+  height: 360px;
+  background: #E8F4F8;
+  border: 2px solid #C5E3ED;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+}
+.canvas-wrap.roof-sky {
+  background: linear-gradient(180deg, #FBF6EE 0%, #F5EDE0 100%);
+  border-color: #E6D9C8;
+}
+
+#pondCanvas, #roofCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 暂停弹层 */
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 253, 249, 0.88);
+  backdrop-filter: blur(4px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 50;
+  border-radius: 18px;
+}
+.pause-overlay.active { display: flex; }
+.pause-btn {
+  padding: 10px 24px;
+  background: var(--pink-deep);
+  color: #FFF;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-reading);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ================= 游戏 6 & 7：占星与涂鸦灵签 ================= */
+.tarot-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+.tarot-card-item {
+  background: #FFFDF9;
+  border: 1.5px solid var(--washi-border);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.tarot-card-item:hover {
+  transform: translateY(-3px);
+  border-color: var(--pink-mid);
+}

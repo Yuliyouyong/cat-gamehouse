@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>猫猫游戏屋 · 珠珠手账绘本</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+  <link rel="stylesheet" href="./assets/games.css" />
+</head>
+<body>
+
+<!-- 莫兰纸与治愈环境层 (深度纸张颗粒肌理、彩铅深绿与深粉双色呼吸柔光、散落珍珠项链) -->
+<div class="paper-ambient">
+  <div class="paper-grain"></div>
+  <div class="morandi-paper-grain"></div>
+  <div class="glow-orb green"></div>
+  <div class="glow-orb pink"></div>
+  <canvas id="dustCanvas"></canvas>
+
+  <!-- 全局 SVG 渐变定义池 (供全部卡通珍珠与饰品复用) -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+    <defs>
+      <radialGradient id="pearlShineGrad" cx="35%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="35%" stop-color="#FFF8F4"/>
+        <stop offset="70%" stop-color="#ECDAD4"/>
+        <stop offset="100%" stop-color="#BFA59C"/>
+      </radialGradient>
+      <radialGradient id="cherryShineGrad" cx="35%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#FFD6DF"/>
+        <stop offset="30%" stop-color="#E8768E"/>
+        <stop offset="85%" stop-color="#B83B56"/>
+        <stop offset="100%" stop-color="#802135"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- 屏幕四周、书本边缘与桌面多点错落散落手账饰品层 (源自用户 5 张参考图) -->
+  <div class="scattered-trinkets">
+    <!-- 1. 左上角主力大件：粉缎大蝴蝶结温润珍珠球 (源自参考图 2) -->
+    <div class="trinket-item" style="top:18px;left:24px;" title="粉缎大蝴蝶结珍珠球 ✦">
+      <svg width="68" height="74" viewBox="0 0 68 74">
+        <polygon points="12,18 14,13 19,11 14,9 12,4 10,9 5,11 10,13" fill="#FFFDF9" opacity="0.95"/>
+        <polygon points="56,54 57.5,50 61,48 57.5,46 56,42 54.5,46 51,48 54.5,50" fill="#FFFDF9" opacity="0.95"/>
+        <circle cx="34" cy="46" r="22" fill="url(#pearlShineGrad)" stroke="#C8BAA9" stroke-width="1.8"/>
+        <ellipse cx="27" cy="38" rx="7" ry="4" fill="#FFFFFF" transform="rotate(-25 27 38)"/>
+        <circle cx="22" cy="42" r="2" fill="#FFFFFF"/>
+        <g transform="translate(34, 22)">
+          <path d="M-2,-2 C-15,-15 -30,-8 -30,5 C-30,16 -13,11 -2,-1" fill="#BF6277" stroke="#883446" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M-2,-2 C-13,-12 -25,-6 -26,3 C-26,9 -14,7 -2,-1" fill="#D98E9E" opacity="0.85"/>
+          <path d="M2,-2 C15,-15 30,-8 30,5 C30,16 13,11 2,-1" fill="#BF6277" stroke="#883446" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M2,-2 C13,-12 25,-6 26,3 C26,9 14,7 2,-1" fill="#D98E9E" opacity="0.85"/>
+          <path d="M-5,1 C-16,13 -24,26 -22,30 C-20,32 -15,25 -4,8" fill="#A6475C" stroke="#883446" stroke-width="1.4"/>
+          <path d="M5,1 C16,13 25,28 22,32 C20,34 16,26 4,8" fill="#A6475C" stroke="#883446" stroke-width="1.4"/>
+          <ellipse cx="0" cy="0" rx="5" ry="4.2" fill="#883446"/>
+          <polygon points="0,-6 1.5,-2 5,-0.5 1.5,1 0,5 -1.5,1 -5,-0.5 -1.5,-2" fill="#FFFDF9"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 2. 右上角主力大件：双层圆弧珍珠项链配长飘带蝴蝶结 (源自参考图 1 & 3) -->
+    <div class="trinket-item" style="top:16px;right:26px;" title="双层珍珠项链配长飘带蝴蝶结 ✦">
+      <svg width="92" height="82" viewBox="0 0 92 82">
+        <polygon points="76,14 78,10 82,8 78,6 76,2 74,6 70,8 74,10" fill="#FFFDF9"/>
+        <polygon points="12,58 13.5,55 16.5,53.5 13.5,52 12,49 10.5,52 7.5,53.5 10.5,55" fill="#FFFDF9"/>
+        <path d="M16,26 Q46,78 76,26" fill="none" stroke="#CDB996" stroke-width="1.6" stroke-dasharray="2,1"/>
+        <circle cx="20" cy="35" r="5" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.2"/>
+        <circle cx="29" cy="46" r="5.6" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.2"/>
+        <circle cx="39" cy="53" r="6.2" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.3"/>
+        <circle cx="50" cy="54" r="6.6" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.4"/>
+        <circle cx="61" cy="49" r="6" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.3"/>
+        <circle cx="70" cy="40" r="5.4" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.2"/>
+        <path d="M26,22 Q46,60 66,22" fill="none" stroke="#CDB996" stroke-width="1.4" stroke-dasharray="2,1"/>
+        <circle cx="31" cy="30" r="4.2" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1"/>
+        <circle cx="40" cy="38" r="4.6" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.1"/>
+        <circle cx="50" cy="39" r="4.8" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1.1"/>
+        <circle cx="59" cy="33" r="4.4" fill="#FFFDF9" stroke="#C8BAA9" stroke-width="1"/>
+        <g transform="translate(46, 18)">
+          <path d="M-1,0 C-12,-12 -24,-6 -24,4 C-24,12 -10,8 -1,0" fill="#E8A6B6" stroke="#A6475C" stroke-width="1.6"/>
+          <path d="M1,0 C12,-12 24,-6 24,4 C24,12 10,8 1,0" fill="#E8A6B6" stroke="#A6475C" stroke-width="1.6"/>
+          <path d="M-4,2 C-14,14 -20,28 -17,32 C-15,33 -10,24 -3,8" fill="#D98E9E" stroke="#A6475C" stroke-width="1.3"/>
+          <path d="M4,2 C14,14 22,30 19,34 C17,35 12,26 3,8" fill="#D98E9E" stroke="#A6475C" stroke-width="1.3"/>
+          <circle r="4.5" fill="#FFFDF9" stroke="#CDB996" stroke-width="1.4"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 3. 左侧腰部：彩铅手绘双樱桃配天蓝蝴蝶结 (源自参考图 5) -->
+    <div class="trinket-item" style="top:180px;left:26px;" title="彩铅双樱桃配天蓝蝴蝶结 🍒">
+      <svg width="60" height="74" viewBox="0 0 60 74">
+        <path d="M30,16 Q18,34 18,50" fill="none" stroke="#527448" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M30,16 Q40,32 44,52" fill="none" stroke="#527448" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="18" cy="52" r="13" fill="url(#cherryShineGrad)" stroke="#3C5435" stroke-width="1.6"/>
+        <ellipse cx="14" cy="46" rx="4.5" ry="2.5" fill="#FFFFFF" opacity="0.8" transform="rotate(-30 14 46)"/>
+        <circle cx="43" cy="54" r="14" fill="url(#cherryShineGrad)" stroke="#3C5435" stroke-width="1.6"/>
+        <ellipse cx="39" cy="47" rx="5" ry="3" fill="#FFFFFF" opacity="0.8" transform="rotate(-25 39 47)"/>
+        <g transform="translate(30, 16)">
+          <path d="M-1,0 C-10,-12 -22,-6 -22,3 C-22,10 -9,7 -1,0" fill="#9BC4DF" stroke="#4A7C9D" stroke-width="1.8"/>
+          <path d="M1,0 C10,-12 22,-6 22,3 C22,10 9,7 1,0" fill="#9BC4DF" stroke="#4A7C9D" stroke-width="1.8"/>
+          <path d="M-3,2 C-10,12 -16,24 -14,27 C-12,28 -8,20 -2,7" fill="#8AB7D4" stroke="#4A7C9D" stroke-width="1.3"/>
+          <path d="M3,2 C10,12 18,26 15,29 C13,30 9,22 2,7" fill="#8AB7D4" stroke="#4A7C9D" stroke-width="1.3"/>
+          <circle r="3.6" fill="#75A6C7" stroke="#4A7C9D" stroke-width="1.4"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 4. 右侧腰部：饱满粉色丝缎双耳蝴蝶结 (源自参考图 4) -->
+    <div class="trinket-item" style="top:190px;right:30px;" title="经典粉色丝缎蝴蝶结 🎀">
+      <svg width="56" height="46" viewBox="0 0 56 46">
+        <path d="M25,18 C11,4 2,12 2,24 C2,34 18,28 24,19" fill="#D98E9E" stroke="#883446" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M24,18 C14,8 7,14 7,22 C7,29 18,25 23,19" fill="#EDB8C3" opacity="0.9"/>
+        <path d="M31,18 C45,4 54,12 54,24 C54,34 38,28 32,19" fill="#D98E9E" stroke="#883446" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M32,18 C42,8 49,14 49,22 C49,29 38,25 33,19" fill="#EDB8C3" opacity="0.9"/>
+        <path d="M22,21 C15,31 12,39 16,41 C19,42 22,34 26,23" fill="#BF6277" stroke="#883446" stroke-width="1.5"/>
+        <path d="M34,21 C41,31 44,39 40,41 C37,42 34,34 30,23" fill="#BF6277" stroke="#883446" stroke-width="1.5"/>
+        <rect x="24" y="14" width="8" height="9" rx="3.5" fill="#883446"/>
+        <ellipse cx="28" cy="18" rx="2" ry="1.2" fill="#FFFDF9"/>
+      </svg>
+    </div>
+
+    <!-- 5. 左下角：彩铅樱桃 + 散落双珍珠 + 闪耀十字星 -->
+    <div class="trinket-item" style="bottom:120px;left:24px;" title="彩铅小樱桃 🍒">
+      <svg width="44" height="52" viewBox="0 0 60 74">
+        <path d="M30,16 Q18,34 18,50" fill="none" stroke="#527448" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M30,16 Q40,32 44,52" fill="none" stroke="#527448" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="18" cy="52" r="13" fill="url(#cherryShineGrad)" stroke="#3C5435" stroke-width="1.6"/>
+        <circle cx="43" cy="54" r="14" fill="url(#cherryShineGrad)" stroke="#3C5435" stroke-width="1.6"/>
+        <circle cx="30" cy="16" r="4" fill="#9BC4DF" stroke="#4A7C9D" stroke-width="1.2"/>
+      </svg>
+    </div>
+    <div class="trinket-item trinket-pearl large" style="bottom:48px;left:36px;" title="晶莹温润大珍珠"></div>
+    <div class="trinket-item trinket-pearl small" style="bottom:28px;left:64px;"></div>
+    <div class="trinket-item" style="bottom:38px;left:88px;">
+      <svg width="22" height="22" viewBox="0 0 24 24">
+        <polygon points="12,1 14.5,9 23,12 14.5,15 12,23 9.5,15 1,12 9.5,9" fill="#FFFDF9" stroke="#CDB996" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <!-- 6. 右下角：粉缎大蝴蝶结珍珠球 + 散落大珍珠 (源自参考图 2) -->
+    <div class="trinket-item" style="bottom:22px;right:34px;" title="粉缎蝴蝶结珍珠球 ✦">
+      <svg width="58" height="64" viewBox="0 0 68 74">
+        <circle cx="34" cy="46" r="22" fill="url(#pearlShineGrad)" stroke="#C8BAA9" stroke-width="1.8"/>
+        <ellipse cx="27" cy="38" rx="7" ry="4" fill="#FFFFFF" transform="rotate(-25 27 38)"/>
+        <g transform="translate(34, 22)">
+          <path d="M-2,-2 C-15,-15 -30,-8 -30,5 C-30,16 -13,11 -2,-1" fill="#BF6277" stroke="#883446" stroke-width="1.8"/>
+          <path d="M2,-2 C15,-15 30,-8 30,5 C30,16 13,11 2,-1" fill="#BF6277" stroke="#883446" stroke-width="1.8"/>
+          <path d="M-5,1 C-16,13 -24,26 -22,30 C-20,32 -15,25 -4,8" fill="#A6475C" stroke="#883446" stroke-width="1.4"/>
+          <path d="M5,1 C16,13 25,28 22,32 C20,34 16,26 4,8" fill="#A6475C" stroke="#883446" stroke-width="1.4"/>
+          <ellipse cx="0" cy="0" rx="5" ry="4.2" fill="#883446"/>
+        </g>
+      </svg>
+    </div>
+    <div class="trinket-item trinket-pearl large" style="bottom:68px;right:78px;"></div>
+    <div class="trinket-item" style="bottom:88px;right:42px;">
+      <svg width="18" height="18" viewBox="0 0 24 24">
+        <polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#FFFDF9" stroke="#CDB996" stroke-width="0.8"/>
+      </svg>
+    </div>
+
+    <!-- 7. 书本顶部投影缝隙错落点缀：双层小珍珠链与粉缎带 -->
+    <div class="trinket-item" style="top:74px;left:180px;">
+      <svg width="44" height="34" viewBox="0 0 56 46">
+        <path d="M25,18 C11,4 2,12 2,24 C2,34 18,28 24,19" fill="#D98E9E" stroke="#883446" stroke-width="1.8"/>
+        <path d="M31,18 C45,4 54,12 54,24 C54,34 38,28 32,19" fill="#D98E9E" stroke="#883446" stroke-width="1.8"/>
+        <circle cx="28" cy="18" r="3.5" fill="#883446"/>
+      </svg>
+    </div>
+    <div class="trinket-item trinket-pearl small" style="top:62px;left:236px;"></div>
+
+    <div class="trinket-item" style="top:72px;right:190px;">
+      <svg width="22" height="22" viewBox="0 0 24 24">
+        <polygon points="12,1 14.5,9 23,12 14.5,15 12,23 9.5,15 1,12 9.5,9" fill="#FFFDF9" stroke="#CDB996" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="trinket-item trinket-pearl small" style="top:65px;right:224px;"></div>
+
+    <!-- 8. 标题栏与漫步舞台两侧悬浮轻星 -->
+    <div class="trinket-item" style="top:18px;left:280px;">
+      <svg width="15" height="15" viewBox="0 0 24 24">
+        <polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#FFFDF9" opacity="0.9"/>
+      </svg>
+    </div>
+    <div class="trinket-item" style="top:22px;right:290px;">
+      <svg width="16" height="16" viewBox="0 0 24 24">
+        <polygon points="12,1 15,9 23,12 15,15 12,23 9,15 1,12 9,9" fill="#FFFDF9" opacity="0.9"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 小工具受控单页视图容器 (SPA Viewport) ================= -->
+<div class="app-viewport">
+
+  <!-- ================= 视图 0：大厅主视图 (Lobby) ================= -->
+  <div class="view-section active" id="view-lobby">
+    <div class="lobby-wrap">
+      <div class="lobby-header">
+        <!-- 沿用原版高精白猫形象，绝不改动风格 -->
+        <svg class="mascot-wrap" id="mascotCat" viewBox="0 0 110 165" aria-label="吉祥物白猫">
+          <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+          <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+          <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+          <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+          <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+          <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+          <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+          <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+          <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+          <g transform="translate(55, 27)">
+            <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+            <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+          </g>
+          <ellipse cx="40" cy="72" rx="10" ry="11" fill="#433B4A"/>
+          <ellipse cx="70" cy="72" rx="10" ry="11" fill="#433B4A"/>
+          <circle cx="43" cy="68" r="3.4" fill="#FFFDF9"/>
+          <circle cx="73" cy="68" r="3.4" fill="#FFFDF9"/>
+          <g style="transform-box:fill-box;transform-origin:center;animation:orbFloat 2.4s ease-in-out infinite;">
+            <polygon points="40,71 42,75 46,76 43,78 44,82 40,80 36,82 37,78 34,76 38,75" fill="#FDF3D8"/>
+            <polygon points="70,71 72,75 76,76 73,78 74,82 70,80 66,82 67,78 64,76 68,75" fill="#FDF3D8"/>
+          </g>
+          <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+          <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+          <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+          <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+
+        <h1>猫猫游戏屋</h1>
+        <div class="header-sub-row">
+          <span class="lobby-sub">✦ 灵猫微缩手账绘本 · 翻动书页开玩 ✦</span>
+          <div class="cat-live-status-pill" id="liveStatusBtn" title="点击前往日记小屋抚育灵猫">
+            <span class="live-dot"></span>
+            <span id="catLiveStatus">灵猫 · 极度幸福 · 撒娇求抱 (幸福度 100%)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 侧边可拖拽灵猫伴侣 -->
+      <div class="floating-companion-cat" id="floatingCat" title="拖动我到任意角落 · 点击互动 🐾">
+        <div class="cat-drag-hint">拖我到任意角落</div>
+        <div class="cat-thought-bubble" id="catThoughtBubble">
+          <span id="thoughtText">珠珠，你在这里我就很安心～</span>
+        </div>
+        <div class="cat-sprite-wrapper" id="catSpriteWrapper">
+          <svg class="cat-sprite-svg" id="catSpriteSvg" viewBox="0 0 110 165" style="width:100%;height:100%;"></svg>
+        </div>
+        <div class="cat-shadow"></div>
+      </div>
+
+      <!-- 移动端专属双视图切换药丸 (电脑端隐藏，手机端可无缝切看小屋与卡片) -->
+      <div class="mobile-view-tabs" id="mobileViewTabs">
+        <button class="mobile-tab-btn active" id="tabBtnCard">📖 篇章卡片</button>
+        <button class="mobile-tab-btn" id="tabBtnHouse">🏡 小屋全景</button>
+      </div>
+
+      <!-- 移动端专属 7 大功能房间触控胶囊栏 (电脑端隐藏，手机端一览无余所有卡片，一键即开) -->
+      <div class="mobile-room-shelf" id="mobileRoomShelf">
+        <div class="room-pill active" data-index="0"><span>🏡</span> 日记阁</div>
+        <div class="room-pill" data-index="1"><span>🐾</span> 猫爬架</div>
+        <div class="room-pill" data-index="2"><span>🎯</span> 猜茶几</div>
+        <div class="room-pill" data-index="3"><span>🎣</span> 荷塘钓鱼</div>
+        <div class="room-pill" data-index="4"><span>🐟</span> 接鱼干</div>
+        <div class="room-pill" data-index="5"><span>🔮</span> 占星天窗</div>
+        <div class="room-pill" data-index="6"><span>✨</span> 运势摇摇</div>
+      </div>
+
+      <!-- 3D 手账绘本书体 -->
+      <div class="book-stage">
+        <div class="book-container">
+          <div class="book-spine"></div>
+
+          <!-- 左页：可探索的手绘小屋微缩切面 -->
+          <div class="book-page left">
+            <div class="page-tape left-tape"></div>
+            <div class="house-map-header">
+              <div class="house-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                灵猫秘密温室 · 房间导览
+              </div>
+              <div class="house-tip">点击小屋不同房间，直接翻阅对应游戏篇章 🐾</div>
+            </div>
+
+            <!-- 手绘小屋房间切面 SVG -->
+            <svg class="cozy-house-svg" viewBox="0 0 380 270">
+              <path d="M190,14 L360,94 L20,94 Z" fill="#E8D5D5" stroke="#B57E7E" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M190,26 L336,94 L44,94 Z" fill="#F5EBEB"/>
+              <polygon points="190,3 192.5,9 198,11.5 192.5,14 190,20 187.5,14 182,11.5 187.5,9" fill="#F5D061"/>
+
+              <!-- 阁楼占星天窗 -->
+              <g class="house-room" data-index="5" id="roomAttic">
+                <polygon points="190,34 220,84 160,84" class="room-bg" fill="#FFFDF9" stroke="#9B8AA5" stroke-width="2"/>
+                <circle cx="190" cy="56" r="6.5" fill="#E2CFA8"/>
+                <text x="190" y="76" text-anchor="middle" font-size="10.5" font-weight="700">占星天窗</text>
+              </g>
+
+              <!-- 主建筑外墙 -->
+              <rect x="25" y="94" width="330" height="166" rx="8" fill="#FFFDF9" stroke="#C9BDB8" stroke-width="3"/>
+
+              <!-- 房间 1：秘密书房（珠珠小屋） -->
+              <g class="house-room active" data-index="0" id="roomDiary">
+                <rect x="35" y="104" width="150" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#A3B899" stroke-width="1.8"/>
+                <circle cx="56" cy="128" r="10" fill="#E8D5D5"/>
+                <text x="56" y="132" text-anchor="middle">🏡</text>
+                <text x="116" y="130" text-anchor="middle" font-size="12.5" font-weight="700">珠珠日记阁</text>
+                <text x="116" y="148" text-anchor="middle" fill="#708A66" font-size="10">灵猫陪伴 · 日记</text>
+              </g>
+
+              <!-- 房间 2：天台晒鱼场（接鱼干） -->
+              <g class="house-room" data-index="4" id="roomFishRoof">
+                <rect x="195" y="104" width="150" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#E2CFA8" stroke-width="1.8"/>
+                <circle cx="216" cy="128" r="10" fill="#FFECC7"/>
+                <text x="216" y="132" text-anchor="middle">🐟</text>
+                <text x="276" y="130" text-anchor="middle" font-size="12.5" font-weight="700">天台晒鱼架</text>
+                <text x="276" y="148" text-anchor="middle" fill="#D97706" font-size="10">接鱼干 · 左右接</text>
+              </g>
+
+              <!-- 房间 3：客厅猫爬架（喵喵点击器） -->
+              <g class="house-room" data-index="1" id="roomLiving">
+                <rect x="35" y="182" width="96" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#D4A5A5" stroke-width="1.8"/>
+                <text x="83" y="212" text-anchor="middle" font-size="15">🐾</text>
+                <text x="83" y="232" text-anchor="middle" font-size="11.5" font-weight="700">客厅猫爬架</text>
+              </g>
+
+              <!-- 房间 4：解谜小茶几（猜数字） -->
+              <g class="house-room" data-index="2" id="roomGuess">
+                <rect x="141" y="182" width="98" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#C8D5C4" stroke-width="1.8"/>
+                <text x="190" y="212" text-anchor="middle" font-size="15">🎯</text>
+                <text x="190" y="232" text-anchor="middle" font-size="11.5" font-weight="700">猜心小茶几</text>
+              </g>
+
+              <!-- 房间 5：庭院池塘（猫猫钓鱼） -->
+              <g class="house-room" data-index="3" id="roomPond">
+                <rect x="249" y="182" width="96" height="70" rx="8" class="room-bg" fill="#FAF4ED" stroke="#7EC8E3" stroke-width="1.8"/>
+                <text x="297" y="212" text-anchor="middle" font-size="15">🎣</text>
+                <text x="297" y="232" text-anchor="middle" font-size="11.5" font-weight="700">庭院荷塘</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- 右页：游戏章节拍立得展台 -->
+          <div class="book-page right">
+            <div class="page-tape right-tape"></div>
+            <div class="chapter-container" id="chapterBox"></div>
+
+            <div class="nav-controls">
+              <button class="page-turn-btn" id="prevBtn" title="上一篇章">←</button>
+              <div class="nav-dots" id="navDots"></div>
+              <button class="page-turn-btn" id="nextBtn" title="下一篇章">→</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 1：珠珠日记阁 (House) ================= -->
+  <div class="view-section" id="view-house">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>珠珠与猫咪的小屋</h2>
+          <p>莫兰迪粉绿 · 治愈温室 · 每日心灵签</p>
+        </div>
+
+        <div class="tarot-stage-card" id="houseTarotCard">
+          <div class="tarot-card-inner" id="houseCardInner">
+            <div class="tarot-face tarot-back">
+              <div style="font-size:32px;margin-bottom:8px;">✦</div>
+              <div style="font-size:16px;font-weight:700;">点击翻开今日心灵签</div>
+              <div style="font-size:12px;opacity:0.85;margin-top:6px;">静心感受属于你的温柔密语</div>
+            </div>
+            <div class="tarot-face tarot-front">
+              <div style="font-size:28px;">🌟</div>
+              <div class="tarot-front-title" id="houseCardTitle">太阳 · The Sun</div>
+              <div class="tarot-front-desc" id="houseCardDesc">「每一个微小的努力，都在手账里开出一朵温柔的花。」</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cat-care-panel">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--green-deep);">灵猫羁绊 · 幸福度</div>
+            <div style="font-size:12px;color:var(--ink-muted);" id="houseCatMood">呼噜呼噜温存中 (95%)</div>
+          </div>
+          <button class="btn-snack" id="feedFishBtn">🐟 喂食小鱼干</button>
+        </div>
+
+        <div class="journal-notebook">
+          <div style="font-size:13px;font-weight:700;color:var(--ink-title);margin-bottom:8px;">✦ 珠珠的水彩心绪日记</div>
+          <textarea class="diary-textarea" id="houseDiaryText" placeholder="今天有什么悄悄话想记下吗？写一个字也是美好的印记……"></textarea>
+          <div class="stamp-grid" id="houseStampGrid">
+            <div class="stamp-pill active" data-stamp="开心">🌻 开心</div>
+            <div class="stamp-pill" data-stamp="平静">🍵 平静</div>
+            <div class="stamp-pill" data-stamp="治愈">🌸 治愈</div>
+            <div class="stamp-pill" data-stamp="充实">✨ 充实</div>
+            <div class="stamp-pill" data-stamp="发呆">☁️ 发呆</div>
+            <div class="stamp-pill" data-stamp="疲倦">🌙 疲倦</div>
+            <div class="stamp-pill" data-stamp="确幸">🍀 确幸</div>
+            <div class="stamp-pill" data-stamp="想猫">🐾 想猫</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 2：客厅猫爬架点击器 (Clicker) ================= -->
+  <div class="view-section" id="view-clicker">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>喵喵点击器</h2>
+          <p>客厅猫爬架 · 狂欢蹦蹦跳</p>
+        </div>
+        <div class="clicker-box">
+          <div class="score-badge" id="clickCount">0</div>
+          <div class="combo-banner" id="comboBanner">连击 x0 ✦ 抚摸开始</div>
+          <div class="clicker-cat-stage" id="clickCatStage">
+            <svg viewBox="0 0 110 165" style="width:100%;height:100%;">
+              <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+              <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+              <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+              <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+              <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+              <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+              <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+              <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+              <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+              <g transform="translate(55, 27)">
+                <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+                <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+                <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+              </g>
+              <ellipse cx="40" cy="72" rx="10" ry="11" fill="#433B4A"/>
+              <ellipse cx="70" cy="72" rx="10" ry="11" fill="#433B4A"/>
+              <circle cx="43" cy="68" r="3.4" fill="#FFFDF9"/>
+              <circle cx="73" cy="68" r="3.4" fill="#FFFDF9"/>
+              <g style="transform-box:fill-box;transform-origin:center;animation:orbFloat 2.4s ease-in-out infinite;">
+                <polygon points="40,71 42,75 46,76 43,78 44,82 40,80 36,82 37,78 34,76 38,75" fill="#FDF3D8"/>
+                <polygon points="70,71 72,75 76,76 73,78 74,82 70,80 66,82 67,78 64,76 68,75" fill="#FDF3D8"/>
+              </g>
+              <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+              <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+              <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+              <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 3：猜心小茶几 (Guess) ================= -->
+  <div class="view-section" id="view-guess">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>猫猫猜数字</h2>
+          <p>温暖小茶几 · 1~100 灵犀一点通</p>
+        </div>
+        <div class="guess-display">
+          <div style="font-size:12px;color:var(--ink-muted);" id="guessTip">小猫已经藏好数字啦，在下方输入猜猜看：</div>
+          <div class="guess-number-current" id="guessInputVal">--</div>
+          <div class="guess-history" id="guessHistory"></div>
+        </div>
+
+        <div class="keypad-grid">
+          <button class="keypad-btn" data-num="1">1</button>
+          <button class="keypad-btn" data-num="2">2</button>
+          <button class="keypad-btn" data-num="3">3</button>
+          <button class="keypad-btn" data-num="4">4</button>
+          <button class="keypad-btn" data-num="5">5</button>
+          <button class="keypad-btn" data-num="6">6</button>
+          <button class="keypad-btn" data-num="7">7</button>
+          <button class="keypad-btn" data-num="8">8</button>
+          <button class="keypad-btn" data-num="9">9</button>
+          <button class="keypad-btn" id="keypadClear">C</button>
+          <button class="keypad-btn" data-num="0">0</button>
+          <button class="keypad-btn" id="keypadSubmit" style="background:var(--green-pale);color:var(--green-deep);">✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 4：庭院池塘钓鱼 (Fishing) ================= -->
+  <div class="view-section" id="view-fishing">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>猫猫钓鱼</h2>
+          <p>庭院荷塘 · 点击水面抓小鱼</p>
+        </div>
+        <div class="action-hud">
+          <div class="hud-item">🐟 得分: <span id="fishScore">0</span></div>
+          <div class="hud-item">⏱️ 倒计时: <span id="fishTimer">45</span>s</div>
+          <button class="btn-pause" id="fishPauseBtn">暂停</button>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="pondCanvas"></canvas>
+          <div class="pause-overlay" id="fishPauseOverlay">
+            <div style="font-size:20px;font-weight:700;color:var(--ink-title);">游戏已暂停</div>
+            <button class="pause-btn" id="fishResumeBtn">继续垂钓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 5：天台接鱼干 (Catch) ================= -->
+  <div class="view-section" id="view-catch">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>猫猫接鱼干</h2>
+          <p>天台晒鱼架 · 左右滑动接住美味</p>
+        </div>
+        <div class="action-hud">
+          <div class="hud-item">🐟 得分: <span id="catchScore">0</span></div>
+          <div class="hud-item">❤️ 生命: <span id="catchLives">3</span></div>
+          <button class="btn-pause" id="catchPauseBtn">暂停</button>
+        </div>
+        <div class="canvas-wrap roof-sky">
+          <canvas id="roofCanvas"></canvas>
+          <div class="pause-overlay" id="catchPauseOverlay">
+            <div style="font-size:20px;font-weight:700;color:var(--ink-title);">游戏已暂停</div>
+            <button class="pause-btn" id="catchResumeBtn">继续游戏</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 6：阁楼占星阁 (Tarot) ================= -->
+  <div class="view-section" id="view-tarot">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>猫猫占星阁</h2>
+          <p>阁楼占星天窗 · 22 张经典大阿卡纳手账</p>
+        </div>
+        <div style="text-align:center;margin-bottom:14px;">
+          <button class="btn-snack" id="shuffleTarotBtn">✦ 洗牌抽取一张 ✦</button>
+        </div>
+        <div class="tarot-gallery-grid" id="tarotGalleryGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 视图 7：涂鸦灵签 (Doodle) ================= -->
+  <div class="view-section" id="view-doodle">
+    <button class="back-lobby-btn" data-back="true">🐾 返回大厅</button>
+    <div class="game-container">
+      <div class="game-card-panel">
+        <div class="game-title-bar">
+          <h2>涂鸦灵签</h2>
+          <p>手绘灵签 · 轻松随心抽</p>
+        </div>
+        <div class="tarot-stage-card" id="doodleTarotCard">
+          <div class="tarot-card-inner" id="doodleCardInner">
+            <div class="tarot-face tarot-back" style="background:linear-gradient(135deg,#B57E7E,#D4A5A5);">
+              <div style="font-size:32px;">🐾</div>
+              <div style="font-size:16px;font-weight:700;margin-top:6px;">轻触翻转灵签</div>
+            </div>
+            <div class="tarot-face tarot-front">
+              <div style="font-size:28px;">🌸</div>
+              <div class="tarot-front-title" id="doodleSignTitle">大吉 · 幸福洋溢</div>
+              <div class="tarot-front-desc" id="doodleSignText">「今天你所期待的好消息，正乘着微风奔向你。」</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 脚本外置引入 (遵守小工具容器 CSP 强制约束) -->
+<script src="./assets/app.js"></script>
+</body>
+</html>

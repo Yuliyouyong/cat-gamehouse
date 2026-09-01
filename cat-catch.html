@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<title>猫猫接鱼干 🐟</title>
+<style>
+:root{
+  --line:#8d7b70; --pink:#eec2c9; --pink-deep:#c98a95;
+  --green:#a9c5a1; --green-deep:#7d9b75; --ink:#6d5a52; --paper:#fdf8f4;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:linear-gradient(180deg,#fdf6f1,#f7e8e2);
+  color:var(--ink);overflow:hidden;user-select:none;-webkit-user-select:none;
+}
+.scene{position:fixed;inset:0;display:flex;flex-direction:column}
+/* ===== HUD ===== */
+.hud{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;gap:8px;z-index:10}
+.hud-card{
+  background:var(--paper);border:3px solid var(--line);border-radius:14px 10px 16px 12px;
+  padding:6px 14px;font-size:19px;font-weight:900;box-shadow:4px 4px 0 rgba(141,123,112,.6);
+  transform:rotate(-1deg);white-space:nowrap
+}
+.hud-card:nth-child(2){transform:rotate(.8deg)}
+.hud-card .lives-ico{display:inline-block;transition:.2s}
+.hud-card .lives-ico.lost{opacity:.22;filter:grayscale(1);transform:scale(.8)}
+.combo{min-width:86px;text-align:center;color:#b06f7c;font-size:17px}
+
+/* 返回大厅与暂停手账按钮 */
+.back-home-badge, .pause-btn{
+  background:var(--paper);border:2.5px solid var(--line);border-radius:999px;
+  padding:6px 14px;font-size:14px;font-weight:900;color:var(--ink);
+  text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  box-shadow:3px 3px 0 rgba(141,123,112,.6);transition:transform .12s, box-shadow .12s;
+  font-family:inherit;
+}
+.back-home-badge:hover, .pause-btn:hover{
+  transform:translateY(-2px);box-shadow:4px 4px 0 rgba(141,123,112,.7);
+}
+.back-home-badge:active, .pause-btn:active{
+  transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(141,123,112,.6);
+}
+.pause-btn{color:#b06f7c;border-color:var(--pink-deep)}
+.btn-secondary{
+  background:linear-gradient(180deg,#e8ede6,#d5e0d3);
+  border-color:var(--green-deep);color:#475943;box-shadow:4px 4px 0 var(--green-deep);
+  margin-top:10px;
+}
+/* ===== 舞台 ===== */
+.stage{position:relative;flex:1;overflow:hidden}
+.stage.shake{animation:shakeX .4s}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+/* 手绘云 */
+.cloud{position:absolute;background:#fff;opacity:.75;border-radius:50%;
+  box-shadow:24px 8px 0 0 #fff, -18px 10px 0 0 #fff;animation:cloudDrift linear infinite}
+@keyframes cloudDrift{from{transform:translateX(-140px)}to{transform:translateX(110vw)}}
+/* 掉落物 */
+.droplet{position:absolute;top:0;left:0;font-size:34px;line-height:1;z-index:5;
+  filter:drop-shadow(3px 4px 0 rgba(141,123,112,.3));pointer-events:none}
+.droplet .emo{display:block;animation:sway 1.6s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-8deg) translateY(0)}50%{transform:rotate(8deg) translateY(-4px)}}
+.droplet.bomb{font-size:38px}
+.droplet.mouse{font-size:30px}
+/* 飘字 */
+.float{position:absolute;z-index:20;pointer-events:none;font-size:20px;font-weight:900;
+  color:#4a9d5a;animation:floatUp .9s ease-out forwards;text-shadow:2px 2px 0 rgba(255,255,255,.8)}
+.float.bad{color:#d3544f}
+.float.bomb{color:#b04a3a;font-size:26px}
+@keyframes floatUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-56px);opacity:0}}
+/* 爆炸粒子 */
+.boom{position:absolute;z-index:15;font-size:44px;pointer-events:none;animation:boomPop .5s ease-out forwards}
+@keyframes boomPop{from{transform:scale(.3);opacity:1}60%{transform:scale(1.6)}to{transform:scale(2.2);opacity:0}}
+/* 地面 */
+.ground{
+  position:absolute;left:0;right:0;bottom:0;height:44px;z-index:6;
+  background:linear-gradient(180deg,var(--green),var(--green-deep));
+  border-top:4px solid var(--green-deep);
+  box-shadow:inset 0 -10px 16px rgba(40,80,40,.3)
+}
+.ground::after{content:"";position:absolute;top:-8px;left:0;right:0;height:12px;
+  background:radial-gradient(rgba(255,255,255,.5) 2px, transparent 2.5px);background-size:26px 14px;opacity:.5}
+/* 猫 */
+.cat-holder{position:absolute;bottom:18px;width:96px;height:130px;z-index:7;transition:left .05s linear}
+.cat-fig{width:96px;height:auto;filter:drop-shadow(4px 5px 0 rgba(141,123,112,.3))}
+.cat-holder .lash{stroke-linecap:round}
+.eye-star{transform-box:fill-box;transform-origin:center;animation:tw 1.6s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:1;transform:scale(1) rotate(0)}50%{opacity:.35;transform:scale(.55) rotate(45deg)}}
+.cat-holder.catch .cat-fig{animation:catHappy .3s}
+@keyframes catHappy{0%{transform:translateY(0)}40%{transform:translateY(-14px) rotate(-6deg)}100%{transform:translateY(0)}}
+.cat-holder.hurt .cat-fig{animation:catHurt .4s}
+@keyframes catHurt{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-8px) rotate(8deg)}50%{transform:translateY(0) rotate(-8deg)}75%{transform:translateY(-5px) rotate(5deg)}}
+/* ===== 遮罩 ===== */
+.overlay{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+  background:rgba(93,76,66,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.overlay.hidden{display:none}
+.panel{
+  background:var(--paper);border:4px solid var(--line);border-radius:24px 18px 26px 20px;
+  padding:28px 36px;text-align:center;box-shadow:8px 8px 0 rgba(93,76,66,.5);
+  transform:rotate(-1deg);max-width:88vw
+}
+.panel h2{font-size:26px;font-weight:900;letter-spacing:3px;color:var(--green-deep);transform:rotate(-1deg)}
+.panel .sub{font-size:15px;font-weight:800;color:#8a7368;margin:10px 0 18px;line-height:1.6}
+.panel .best{font-size:14px;font-weight:800;color:#a08a7a;margin-top:12px}
+.btn{
+  border:3px solid var(--pink-deep);border-radius:999px;padding:12px 34px;font-size:18px;
+  font-weight:900;letter-spacing:2px;color:#7a4a55;cursor:pointer;
+  background:linear-gradient(180deg,#f5d3d8,#eec2c9);
+  box-shadow:5px 5px 0 #c98a95, 0 0 0 4px var(--paper);transform:rotate(.6deg);
+  font-family:inherit;transition:transform .08s
+}
+.btn:active{transform:rotate(.6deg) translate(3px,3px);box-shadow:2px 2px 0 #c98a95}
+/* 手机 */
+@media (max-width:560px){
+  .hud-card{font-size:16px;padding:5px 10px}
+  .cat-holder{width:80px;height:110px}
+  .cat-fig{width:80px}
+}
+</style>
+</head>
+<body>
+<div class="scene">
+  <!-- HUD -->
+  <div class="hud">
+    <a class="back-home-badge" href="index.html" title="返回猫猫游戏屋大厅">🐾 大厅</a>
+    <div class="hud-card">🐟 <b id="score">0</b></div>
+    <div class="hud-card combo" id="comboEl"></div>
+    <div class="hud-card" id="livesEl"></div>
+    <button class="pause-btn" id="pauseBtn" title="暂停游戏 (ESC/空格)">⏸ 暂停</button>
+  </div>
+
+  <!-- 舞台 -->
+  <div class="stage" id="stage">
+    <div class="ground"></div>
+    <div class="cat-holder" id="catHolder">
+      <!-- ============ 原版白猫 (紫色蝴蝶结 + 夸张长睫毛 + 星星眼) ============ -->
+      <svg class="cat-fig" id="catSvg" viewBox="0 0 110 165" aria-label="原版白猫">
+        <!-- 尾巴 -->
+        <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+        <!-- 身体与小脚 -->
+        <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <!-- 头部与猫耳 -->
+        <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+        <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+        <!-- 紫色大蝴蝶结 + 珍珠中心 -->
+        <g transform="translate(55, 27)">
+          <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+          <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+        </g>
+        <!-- 灵动双眼与八角星辉 -->
+        <ellipse cx="40" cy="72" rx="10" ry="11" fill="#433B4A"/>
+        <ellipse cx="70" cy="72" rx="10" ry="11" fill="#433B4A"/>
+        <circle cx="43" cy="68" r="3.4" fill="#FFFDF9"/>
+        <circle cx="73" cy="68" r="3.4" fill="#FFFDF9"/>
+        <g style="transform-box:fill-box;transform-origin:center;animation:orbFloat 2.4s ease-in-out infinite;">
+          <polygon points="40,71 42,75 46,76 43,78 44,82 40,80 36,82 37,78 34,76 38,75" fill="#FDF3D8"/>
+          <polygon points="70,71 72,75 76,76 73,78 74,82 70,80 66,82 67,78 64,76 68,75" fill="#FDF3D8"/>
+        </g>
+        <!-- 夸张上翘浓密睫毛 -->
+        <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- 腮红、鼻吻与三瓣嘴 -->
+        <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+        <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+        <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+        <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 遮罩 -->
+  <div class="overlay" id="overlay">
+    <div class="panel" id="startPanel">
+      <h2>🐱 猫猫接鱼干</h2>
+      <div class="sub">灵猫珠珠饿啦！天上在下鱼干雨，<br>左右滑动 / 按 ←→ 接住鱼干 🐟<br>小心老鼠 🐭 会扣分，炸弹 💣 会炸掉一条命！</div>
+      <button class="btn" id="startBtn">开始接鱼干 🐟</button>
+      <div class="best">最高纪录：<b id="bestStart">0</b></div>
+    </div>
+    <!-- 暂停面板 -->
+    <div class="panel hidden" id="pausePanel">
+      <h2>⏸ 游戏小憩中</h2>
+      <div class="sub">灵猫珠珠打了个大大的哈欠……<br>当前接到了 <b id="pauseScore">0</b> 条小鱼干</div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+        <button class="btn" id="resumeBtn">▶ 继续接鱼干</button>
+        <button class="btn btn-secondary" id="restartBtn">🔄 重新开始</button>
+        <a class="btn btn-secondary" href="index.html" style="text-decoration:none;">🐾 返回大厅</a>
+      </div>
+    </div>
+    <div class="panel hidden" id="endPanel">
+      <h2>游戏结束！</h2>
+      <div class="sub" id="endSub">你接到了 0 条鱼干</div>
+      <div class="best" id="endBest">最高纪录：0</div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+        <button class="btn" id="againBtn">再来一局 🎣</button>
+        <a class="btn btn-secondary" href="index.html" style="text-decoration:none;">🐾 返回大厅</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= 元素 ================= */
+const $ = id => document.getElementById(id);
+const stage = $("stage"), catHolder = $("catHolder"), catSvg = $("catSvg");
+const scoreEl = $("score"), comboEl = $("comboEl"), livesEl = $("livesEl");
+const overlay = $("overlay"), startPanel = $("startPanel"), endPanel = $("endPanel");
+const startBtn = $("startBtn"), againBtn = $("againBtn"), bestStart = $("bestStart");
+const endSub = $("endSub"), endBest = $("endBest");
+
+/* ================= 状态 ================= */
+const S = {
+  score:0, combo:0, lives:3, elapsed:0, running:false,
+  catX:0, pointerActive:false, pointerX:0, best:0
+};
+const DROPS = [];   // {el, x, y, kind, w}
+const KB = {left:false, right:false};
+let spawnT = 0, raf = null, last = 0;
+const CAT_W = 96, CAT_Y_FROM = 150, CAT_Y_TO = 230; // 猫头部碰撞区（stage 底部往上）
+
+/* 最高分 */
+try{ S.best = +localStorage.getItem("cat-catch-best") || 0; }catch(e){}
+function saveBest(){ try{ localStorage.setItem("cat-catch-best", S.best); }catch(e){} }
+
+/* ================= 音效 ================= */
+let AC = null;
+function ensureAC(){ if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+function blip(freq, dur, vol, type){
+  try{
+    const a = ensureAC(); if(a.state === "suspended") a.resume();
+    const t = a.currentTime;
+    const o = a.createOscillator(); o.type = type || "sine";
+    o.frequency.setValueAtTime(freq, t);
+    const g = a.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g).connect(a.destination);
+    o.start(t); o.stop(t+dur+0.02);
+  }catch(e){}
+}
+function eatSound(){ blip(720,.08,.35); setTimeout(()=>blip(1080,.09,.3),60); }
+function mouseSound(){ blip(1400,.06,.25,"square"); setTimeout(()=>blip(900,.08,.25,"square"),70); }
+function boomSound(){
+  try{
+    const a = ensureAC(); if(a.state === "suspended") a.resume();
+    const t = a.currentTime;
+    const o = a.createOscillator(); o.type = "sawtooth";
+    o.frequency.setValueAtTime(160, t);
+    o.frequency.exponentialRampToValueAtTime(38, t+0.28);
+    const g = a.createGain();
+    g.gain.setValueAtTime(.4, t);
+    g.gain.exponentialRampToValueAtTime(.0001, t+.3);
+    o.connect(g).connect(a.destination);
+    o.start(t); o.stop(t+.32);
+  }catch(e){}
+}
+
+/* ================= 生成掉落物 ================= */
+function spawnDrop(){
+  const stageW = stage.clientWidth;
+  const r = Math.random();
+  let kind = r < 0.70 ? "fish" : r < 0.90 ? "mouse" : "bomb";
+  if(kind === "bomb" && S.elapsed < 6) kind = "fish";   // 开局 6 秒无炸弹
+  const el = document.createElement("div");
+  el.className = "droplet " + kind;
+  const emo = document.createElement("span");
+  emo.className = "emo";
+  emo.textContent = kind === "fish" ? ["🐟","🐠","🍣"][Math.floor(Math.random()*3)]
+                  : kind === "mouse" ? "🐭" : "💣";
+  el.appendChild(emo);
+  stage.appendChild(el);
+  const d = { el, kind, x: 24 + Math.random()*(stageW-70), y: -30,
+              w: kind === "fish" ? 1 : kind === "mouse" ? -2 : -99 };
+  DROPS.push(d);
+  el.style.transform = `translate(${d.x}px, ${d.y}px)`;
+}
+
+/* ================= 主循环 ================= */
+function loop(t){
+  if(!S.running) return;
+  const dt = Math.min((t-last)/1000, .05);
+  last = t;
+  S.elapsed += dt;
+  const stageW = stage.clientWidth, stageH = stage.clientHeight;
+
+  // 猫移动：键盘优先，其次跟随指针
+  if(KB.left) S.catX -= 340*dt;
+  if(KB.right) S.catX += 340*dt;
+  if(!KB.left && !KB.right && S.pointerActive){
+    S.catX += (S.pointerX - S.catX) * Math.min(1, dt*14);
+  }
+  S.catX = Math.max(CAT_W/2, Math.min(stageW - CAT_W/2, S.catX));
+  catHolder.style.left = (S.catX - CAT_W/2) + "px";
+  const facing = (KB.right || (S.pointerActive && S.pointerX > S.catX));
+  catSvg.style.transform = facing ? "scaleX(-1)" : "";
+
+  // 掉落物
+  const speed = Math.min(175 + S.elapsed*5.5, 440);
+  for(let i=DROPS.length-1; i>=0; i--){
+    const d = DROPS[i];
+    d.y += speed*dt;
+    d.el.style.transform = `translate(${d.x}px, ${d.y}px)`;
+    // 碰撞（猫头部区域）
+    const cy = stageH - d.y;   // 从底部往上
+    if(cy > CAT_Y_FROM && cy < CAT_Y_TO && Math.abs(d.x - S.catX) < 52){
+      catchDrop(d, stageW, stageH);
+      DROPS.splice(i,1);
+      d.el.remove();
+      continue;
+    }
+    if(d.y > stageH + 40){ DROPS.splice(i,1); d.el.remove(); }
+  }
+
+  // 生成节奏
+  spawnT -= dt;
+  if(spawnT <= 0){
+    spawnDrop();
+    spawnT = Math.max(.42, 1.1 - S.elapsed*.012);
+  }
+
+  // HUD
+  comboEl.textContent = S.combo >= 2 ? (S.combo >= 8 ? `🔥 ${S.combo}` : `x${S.combo}`) : "";
+  raf = requestAnimationFrame(loop);
+}
+
+function catchDrop(d, stageW, stageH){
+  if(d.kind === "fish"){
+    const gain = 1 + Math.floor(S.combo/6);
+    S.score += gain;
+    S.combo++;
+    eatSound();
+    catHolder.classList.remove("catch"); void catHolder.offsetWidth;
+    catHolder.classList.add("catch");
+    floatAt(d.x, d.y, `+${gain}`, false);
+  }else if(d.kind === "mouse"){
+    S.score = Math.max(0, S.score - 2);
+    S.combo = 0;
+    mouseSound();
+    catHolder.classList.remove("hurt"); void catHolder.offsetWidth;
+    catHolder.classList.add("hurt");
+    floatAt(d.x, d.y, "-2", true);
+  }else{ // bomb
+    S.lives--;
+    S.combo = 0;
+    boomSound();
+    stage.classList.remove("shake"); void stage.offsetWidth; stage.classList.add("shake");
+    boomAt(d.x, d.y);
+    floatAt(d.x, d.y, "💥", true);
+    if(S.lives <= 0){ endGame(stageW, stageH); return; }
+  }
+  updateHUD();
+}
+
+/* ================= 特效 ================= */
+function floatAt(x, y, txt, bad){
+  const f = document.createElement("span");
+  f.className = "float" + (bad ? (txt==="💥" ? " bomb" : " bad") : "");
+  f.textContent = txt;
+  f.style.left = x+"px"; f.style.top = y+"px";
+  stage.appendChild(f);
+  setTimeout(()=>f.remove(), 950);
+}
+function boomAt(x, y){
+  const b = document.createElement("span");
+  b.className = "boom"; b.textContent = "💥";
+  b.style.left = (x-20)+"px"; b.style.top = (y-20)+"px";
+  stage.appendChild(b);
+  setTimeout(()=>b.remove(), 550);
+  for(let i=0;i<8;i++){  // 金星碎屑
+    const s = document.createElement("span");
+    s.className = "boom"; s.textContent = "✦";
+    s.style.left = x+"px"; s.style.top = y+"px";
+    s.style.fontSize = (12+Math.random()*10)+"px";
+    s.style.color = "#e8b94a";
+    s.style.animationDuration = ".6s";
+    stage.appendChild(s);
+    setTimeout(()=>s.remove(), 650);
+  }
+}
+
+/* ================= HUD / 流程 ================= */
+function updateHUD(){
+  scoreEl.textContent = S.score;
+  let html = "";
+  for(let i=0;i<3;i++){
+    html += `<span class="lives-ico${i < S.lives ? "" : " lost"}">🐾</span>`;
+  }
+  livesEl.innerHTML = html;
+}
+function startGame(){
+  S.score = 0; S.combo = 0; S.lives = 3; S.elapsed = 0; S.running = true;
+  DROPS.forEach(d=>d.el.remove()); DROPS.length = 0;
+  spawnT = .5;
+  updateHUD();
+  overlay.classList.add("hidden");
+  S.catX = stage.clientWidth/2;
+  catHolder.style.left = (S.catX - CAT_W/2) + "px";
+  last = performance.now();
+  raf = requestAnimationFrame(loop);
+}
+function endGame(stageW, stageH){
+  S.running = false;
+  cancelAnimationFrame(raf);
+  DROPS.forEach(d=>d.el.remove()); DROPS.length = 0;
+  if(S.score > S.best){ S.best = S.score; saveBest(); }
+  endSub.innerHTML = `灵猫珠珠吃到了 <b>${S.score}</b> 分！<br>连击最高 <b>${S.combo}</b>（连击加成已算入得分）`;
+  endBest.innerHTML = `最高纪录：<b>${S.best}</b>`;
+  endPanel.classList.remove("hidden");
+  startPanel.classList.add("hidden");
+  overlay.classList.remove("hidden");
+}
+
+/* ================= 暂停逻辑 ================= */
+const pauseBtn = $("pauseBtn"), pausePanel = $("pausePanel"), resumeBtn = $("resumeBtn");
+const restartBtn = $("restartBtn"), pauseScore = $("pauseScore");
+
+function pauseGame(){
+  if(!S.running || S.paused) return;
+  S.paused = true;
+  cancelAnimationFrame(raf);
+  pauseScore.textContent = S.score;
+  pausePanel.classList.remove("hidden");
+  startPanel.classList.add("hidden");
+  endPanel.classList.add("hidden");
+  overlay.classList.remove("hidden");
+}
+
+function resumeGame(){
+  if(!S.running || !S.paused) return;
+  S.paused = false;
+  pausePanel.classList.add("hidden");
+  overlay.classList.add("hidden");
+  last = performance.now();
+  raf = requestAnimationFrame(loop);
+}
+
+pauseBtn.addEventListener("click", pauseGame);
+resumeBtn.addEventListener("click", resumeGame);
+restartBtn.addEventListener("click", ()=>{
+  pausePanel.classList.add("hidden");
+  S.paused = false;
+  startGame();
+});
+
+/* ================= 事件 ================= */
+startBtn.addEventListener("click", ()=>{ startGame(); });
+againBtn.addEventListener("click", ()=>{
+  endPanel.classList.add("hidden");
+  startPanel.classList.remove("hidden");
+  startGame();
+});
+// 触屏/鼠标：按住拖动猫（pointer 跟随）
+stage.addEventListener("pointerdown", e=>{ S.pointerActive = true; S.pointerX = e.clientX; });
+stage.addEventListener("pointermove", e=>{
+  if(S.pointerActive || e.pointerType === "touch"){ S.pointerActive = true; S.pointerX = e.clientX; }
+});
+stage.addEventListener("pointerup", ()=>{ S.pointerActive = false; });
+stage.addEventListener("pointerleave", ()=>{ S.pointerActive = false; });
+// 键盘
+window.addEventListener("keydown", e=>{
+  if(e.key === "ArrowLeft" || e.key === "a" || e.key === "A"){ 
+    e.preventDefault(); 
+    KB.left = true; 
+    S.pointerActive = false; 
+  }
+  if(e.key === "ArrowRight" || e.key === "d" || e.key === "D"){ 
+    e.preventDefault(); 
+    KB.right = true; 
+    S.pointerActive = false; 
+  }
+  if(e.key === "Escape" || e.key === " "){
+    e.preventDefault();
+    if(S.running){
+      if(S.paused) resumeGame();
+      else pauseGame();
+    }
+  }
+});
+window.addEventListener("keyup", e=>{
+  if(e.key === "ArrowLeft" || e.key === "a" || e.key === "A") KB.left = false;
+  if(e.key === "ArrowRight" || e.key === "d" || e.key === "D") KB.right = false;
+});
+
+/* ================= 手绘云 ================= */
+(function(){
+  for(let i=0;i<4;i++){
+    const c = document.createElement("div");
+    c.className = "cloud";
+    const size = 26 + Math.random()*34;
+    c.style.width = size+"px"; c.style.height = size*0.7+"px";
+    c.style.top = (6 + Math.random()*34)+"%";
+    c.style.animationDuration = (16 + Math.random()*20)+"s";
+    c.style.animationDelay = (-Math.random()*20)+"s";
+    stage.appendChild(c);
+  }
+})();
+
+/* ================= 初始化 ================= */
+bestStart.textContent = S.best;
+updateHUD();
+</script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<title>猫猫钓鱼 🐱🐟</title>
+<style>
+:root{
+  --bg: #F3EDE8;
+  --bg-warm: #FAF4EE;
+  --pink: #D4A5A5;
+  --pink-deep: #B57E7E;
+  --pink-soft: #E8D5D5;
+  --green: #A3B899;
+  --green-deep: #708A66;
+  --green-soft: #C8D5C4;
+  --water1: #C2D9C5; 
+  --water2: #A3BFA8; 
+  --water3: #7E9C84;
+  --grass1: #BACDB5; 
+  --grass2: #8FA685; 
+  --ink: #4B4040;
+  --paper: #FFFDF9;
+  --line: #D8CCC4;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  overflow:hidden;user-select:none;-webkit-user-select:none;background:var(--water3)
+}
+.scene{position:fixed;inset:0;overflow:hidden}
+/* ===== 池塘水面 ===== */
+.water{
+  position:absolute;top:26%;left:0;right:0;bottom:0;z-index:0;
+  background:linear-gradient(180deg,var(--water1),var(--water2) 48%,var(--water3));
+}
+/* 波光 */
+.glint{
+  position:absolute;left:-25%;height:46px;border-radius:50%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:glintMove 5.5s ease-in-out infinite alternate;
+}
+@keyframes glintMove{from{transform:translateX(-40px)}to{transform:translateX(60px)}}
+/* 涟漪 */
+.ripple{
+  position:absolute;border:2px solid rgba(255,255,255,.45);border-radius:50%;
+  opacity:0;animation:ripple 3.4s linear infinite;
+}
+@keyframes ripple{
+  0%{transform:scale(.25);opacity:0}
+  22%{opacity:.75}
+  100%{transform:scale(3.4);opacity:0}
+}
+/* 水底点缀 */
+.depth{position:absolute;z-index:1;font-size:26px;opacity:.4;filter:grayscale(.2) brightness(.85)}
+/* ===== 岸边 ===== */
+.bank{
+  position:absolute;top:0;left:0;right:0;height:26%;z-index:3;
+  background:linear-gradient(180deg,var(--grass1),var(--grass2));
+  box-shadow:inset 0 -12px 20px rgba(70,90,70,.22);
+}
+.bank::after{ /* 泥岸线 */
+  content:"";position:absolute;left:0;right:0;bottom:-9px;height:20px;
+  background:linear-gradient(180deg,#A89885,#857462);
+  border-radius:50% 50% 0 0;opacity:.85;
+}
+.leaf{position:absolute;z-index:4;font-size:22px;opacity:.75;animation:sway 4s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+/* ===== 原版白猫 ===== */
+.cat{
+  position:absolute;left:8%;bottom:-4px;z-index:6;
+  width:84px;height:105px;
+  filter:drop-shadow(0 6px 12px rgba(60,84,53,.3));
+  transform-origin:bottom center;
+}
+.cat.pounce{animation:pounce .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pounce{
+  0%{transform:translateY(0) rotate(0)}
+  35%{transform:translateY(-14px) rotate(-6deg)}
+  70%{transform:translateY(3px) rotate(3deg)}
+  100%{transform:translateY(0) rotate(0)}
+}
+.cat-name{position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:11px;font-weight:800;color:#FFFDF9;background:rgba(112,138,102,.85);
+  padding:1.5px 9px;border-radius:999px;white-space:nowrap;letter-spacing:1px}
+/* ===== 鱼 ===== */
+.fish{
+  position:absolute;z-index:5;cursor:pointer;line-height:0;
+  opacity:0;transform:scale(.3);
+  transition:opacity .3s, transform .3s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 4px 6px rgba(60,84,53,.25));
+}
+.fish.in{opacity:1;transform:scale(1)}
+.fish.caught{
+  opacity:0 !important;transform:scale(2) !important;
+  transition:opacity .2s ease-in, transform .2s ease-in !important;
+  pointer-events:none;
+}
+.fish .f-emoji{display:block;animation:swim 2.2s ease-in-out infinite}
+@keyframes swim{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-6px) rotate(7deg)}}
+/* ===== HUD ===== */
+.hud{
+  position:absolute;top:12px;left:0;right:0;z-index:9;
+  display:flex;justify-content:space-between;align-items:center;padding:0 14px;
+}
+.hud-card{
+  background:rgba(255,253,249,.94);border-radius:14px;padding:7px 16px;
+  font-weight:900;font-size:17px;color:var(--ink);
+  box-shadow:0 4px 14px rgba(70,90,70,.18);border:1.8px solid #D8CCC4;
+}
+.hud-card.pop{animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.28)}100%{transform:scale(1)}}
+.timer.low{color:#D45B74;animation:pulse .55s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* 返回大厅与暂停按钮 */
+.back-home-badge, .pause-btn{
+  background:var(--paper);border-radius:999px;padding:5px 14px;
+  font-weight:900;font-size:13.5px;color:var(--green-deep);
+  border:1.5px solid var(--green-soft);box-shadow:0 3px 8px rgba(70,90,70,.16);
+  text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;
+  transition:all .15s ease;font-family:inherit;
+}
+.back-home-badge:hover, .pause-btn:hover{
+  transform:translateY(-2px);box-shadow:0 5px 12px rgba(70,90,70,.24);
+}
+.back-home-badge:active, .pause-btn:active{
+  transform:translateY(1px);box-shadow:0 1px 4px rgba(70,90,70,.16);
+}
+.pause-btn{color:var(--pink-deep);border-color:var(--pink-soft)}
+.btn-secondary{
+  background:linear-gradient(180deg,#D4A5A5,#B57E7E);
+  box-shadow:0 4px 0 #946060, 0 8px 16px rgba(181,126,126,.30);
+  margin-top:10px;
+}
+/* ===== 猫爪 ===== */
+#paw{
+  position:absolute;z-index:8;font-size:30px;line-height:1;pointer-events:none;
+  opacity:0;transition:opacity .15s;
+}
+/* ===== 结束遮罩 ===== */
+.overlay{
+  position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:rgba(40,60,45,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:1;transition:opacity .3s;
+}
+.overlay.hidden{opacity:0;pointer-events:none}
+.end-card{
+  background:var(--paper);border:2px solid var(--line);border-radius:24px;padding:28px 38px;text-align:center;
+  box-shadow:0 20px 50px rgba(40,60,45,.35);transform:scale(1);
+  animation:cardIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cardIn{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.end-emoji{font-size:50px;line-height:1}
+.end-title{font-size:23px;font-weight:900;color:var(--green-deep);margin:8px 0 3px}
+.end-sub{font-size:15px;font-weight:800;color:var(--ink-soft);margin-bottom:18px}
+.btn{
+  border:none;border-radius:16px;padding:11px 28px;font-size:16.5px;font-weight:900;
+  cursor:pointer;color:#fff;letter-spacing:2px;
+  background:linear-gradient(180deg,#8FA685,#708A66);
+  box-shadow:0 4px 0 #566D4E, 0 8px 16px rgba(112,138,102,.30);
+  transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #566D4E}
+</style>
+</head>
+<body>
+<div class="scene">
+  <!-- 水面背景 -->
+  <div class="water" id="water"></div>
+  <!-- 岸边 -->
+  <div class="bank">
+    <div class="cat" id="catEl">
+      <svg viewBox="0 0 110 165" style="width:100%;height:100%;">
+        <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+        <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+        <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+        <g transform="translate(55, 27)">
+          <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+          <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+        </g>
+        <ellipse cx="40" cy="72" rx="10" ry="11" fill="#433B4A"/>
+        <ellipse cx="70" cy="72" rx="10" ry="11" fill="#433B4A"/>
+        <circle cx="43" cy="68" r="3.4" fill="#FFFDF9"/>
+        <circle cx="73" cy="68" r="3.4" fill="#FFFDF9"/>
+        <g style="transform-box:fill-box;transform-origin:center;animation:orbFloat 2.4s ease-in-out infinite;">
+          <polygon points="40,71 42,75 46,76 43,78 44,82 40,80 36,82 37,78 34,76 38,75" fill="#FDF3D8"/>
+          <polygon points="70,71 72,75 76,76 73,78 74,82 70,80 66,82 67,78 64,76 68,75" fill="#FDF3D8"/>
+        </g>
+        <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+        <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+        <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+        <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="cat-name">灵猫珠珠</div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud">
+    <a class="back-home-badge" href="index.html" title="返回猫猫游戏屋大厅">🐾 大厅</a>
+    <div class="hud-card">🐟 <b id="score">0</b></div>
+    <div class="hud-card timer" id="timer">⏱ 45</div>
+    <button class="pause-btn" id="pauseBtn" title="暂停游戏 (ESC/空格)">⏸ 暂停</button>
+  </div>
+
+  <!-- 猫爪（点击鱼时飞出去） -->
+  <div id="paw">🐾</div>
+
+  <!-- 遮罩 -->
+  <div class="overlay hidden" id="overlay">
+    <!-- 暂停卡片 -->
+    <div class="end-card hidden" id="pauseCard">
+      <div class="end-emoji">⏸</div>
+      <div class="end-title">水面静止啦</div>
+      <div class="end-sub">小鱼们正在吐泡泡发呆……</div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+        <button class="btn" id="resumeBtn">▶ 继续抓鱼</button>
+        <button class="btn btn-secondary" id="restartBtn">🔄 重新开始</button>
+        <a class="btn btn-secondary" href="index.html" style="text-decoration:none;">🐾 返回大厅</a>
+      </div>
+    </div>
+    <!-- 结束卡片 -->
+    <div class="end-card" id="endCard">
+      <div class="end-emoji">🎉</div>
+      <div class="end-title">时间到！</div>
+      <div class="end-sub" id="endSub">你抓到了 0 条鱼！</div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
+        <button class="btn" id="againBtn">再来一局 🔄</button>
+        <a class="btn btn-secondary" href="index.html" style="text-decoration:none;">🐾 返回大厅</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= 元素 ================= */
+const $ = id => document.getElementById(id);
+const scene = document.querySelector(".scene"), water = $("water");
+const catEl = $("catEl"), paw = $("paw");
+const scoreEl = $("score"), timerEl = $("timer");
+const overlay = $("overlay"), endSub = $("endSub"), againBtn = $("againBtn");
+
+/* ================= 状态 ================= */
+let score = 0, timeLeft = 45, timerId = null, gameOver = true, fishes = [];
+
+/* ================= 装饰：波纹 / 波光 / 水草 / 草丛 ================= */
+(function decorate(){
+  // 涟漪
+  for(let i=0;i<10;i++){
+    const r = document.createElement("div");
+    r.className = "ripple";
+    const size = 22 + Math.random()*30;
+    r.style.width = size+"px"; r.style.height = size+"px";
+    r.style.left = (5 + Math.random()*88)+"%";
+    r.style.top = (10 + Math.random()*78)+"%";
+    r.style.animationDelay = (Math.random()*3.4)+"s";
+    water.appendChild(r);
+  }
+  // 波光
+  for(let i=0;i<3;i++){
+    const g = document.createElement("div");
+    g.className = "glint";
+    g.style.top = (12 + i*26)+"%";
+    g.style.animationDuration = (4.5 + i*1.2)+"s";
+    g.style.animationDelay = (i*0.9)+"s";
+    g.style.opacity = 1 - i*0.25;
+    water.appendChild(g);
+  }
+  // 水底石头水草
+  const depth = [["🪨",8,88],["🌿",26,94],["🪨",72,90],["🌿",58,95],["🐚",90,87]];
+  depth.forEach(([e,x,y])=>{
+    const d = document.createElement("div");
+    d.className = "depth"; d.textContent = e;
+    d.style.left = x+"%"; d.style.bottom = (100-y)+"%";
+    water.appendChild(d);
+  });
+  // 岸边草丛
+  const bank = document.querySelector(".bank");
+  for(let i=0;i<7;i++){
+    const l = document.createElement("div");
+    l.className = "leaf"; l.textContent = ["🌿","🌱","🍀","🌾"][i%4];
+    l.style.left = (4 + Math.random()*90)+"%";
+    l.style.bottom = (6 + Math.random()*55)+"%";
+    l.style.animationDelay = (Math.random()*2)+"s";
+    bank.appendChild(l);
+  }
+})();
+
+/* ================= 音效（合成） ================= */
+let AC = null;
+function ensureAC(){ if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+function blip(freq, dur, vol){
+  try{
+    const a = ensureAC();
+    if(a.state === "suspended") a.resume();
+    const t = a.currentTime;
+    const o = a.createOscillator(); o.type = "sine";
+    o.frequency.setValueAtTime(freq, t);
+    const g = a.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+    o.connect(g).connect(a.destination);
+    o.start(t); o.stop(t+dur+0.02);
+  }catch(e){}
+}
+function catchSound(){ blip(880, .09, .4); setTimeout(()=>blip(1320, .1, .3), 55); }
+function endSound(){ [523.25, 659.25, 783.99].forEach((f,i)=>setTimeout(()=>blip(f,.3,.35), i*130)); }
+
+/* ================= 鱼 ================= */
+const FISH_EMOJI = ["🐟","🐠","🐡"];
+const MAX_FISH = 3; // 屏幕上同时出现的鱼数量
+/* 找一个不与现有鱼重叠的随机位置（百分比坐标） */
+function randomSpot(){
+  const w = water.clientWidth, h = water.clientHeight;
+  const wr = water.getBoundingClientRect();
+  for(let t=0;t<24;t++){
+    const l = 6 + Math.random()*80;
+    const tp = 12 + Math.random()*72;
+    const x = l/100*w, y = tp/100*h;
+    const ok = fishes.every(f=>{
+      const fr = f.getBoundingClientRect();
+      return Math.hypot((fr.left-wr.left)-x, (fr.top-wr.top)-y) > 95;
+    });
+    if(ok) return {l, tp};
+  }
+  return {l: 6+Math.random()*80, tp: 12+Math.random()*72};
+}
+function spawnFish(){
+  if(gameOver) return;
+  const el = document.createElement("div");
+  el.className = "fish";
+  const span = document.createElement("span");
+  span.className = "f-emoji";
+  span.textContent = FISH_EMOJI[Math.floor(Math.random()*FISH_EMOJI.length)];
+  const size = 34 + Math.random()*18;
+  span.style.fontSize = size+"px";
+  el.appendChild(span);
+  // 随机位置（水面区域内，避开 HUD 与岸边，且不与其他鱼重叠）
+  const spot = randomSpot();
+  el.style.left = spot.l+"%";
+  el.style.top = spot.tp+"%";
+  el.addEventListener("pointerdown", onFishClick);
+  water.appendChild(el);
+  fishes.push(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add("in")));
+}
+/* 补满鱼到 MAX_FISH 条 */
+function spawnToCapacity(){
+  while(!gameOver && fishes.length < MAX_FISH) spawnFish();
+}
+
+function onFishClick(e){
+  if(gameOver) return;
+  e.stopPropagation();
+  const el = e.currentTarget;
+  const idx = fishes.indexOf(el);
+  if(idx === -1) return; // 已处理的鱼，忽略重复事件
+  fishes.splice(idx, 1);
+  // 得分
+  score++; scoreEl.textContent = score;
+  scoreEl.parentElement.classList.remove("pop"); void scoreEl.parentElement.offsetWidth;
+  scoreEl.parentElement.classList.add("pop");
+  catchSound();
+  // 猫扑 + 爪子飞出
+  catEl.classList.remove("pounce"); void catEl.offsetWidth; catEl.classList.add("pounce");
+  flyPaw(e.clientX, e.clientY);
+  // 鱼放大消失
+  el.classList.add("caught");
+  el.removeEventListener("pointerdown", onFishClick);
+  setTimeout(()=>el.remove(), 230);
+  // 0.5~1.5 秒后补一条新鱼
+  setTimeout(()=>spawnToCapacity(), 500 + Math.random()*1000);
+}
+
+/* 猫爪从猫的位置飞向点击位置 */
+function flyPaw(x, y){
+  const sRect = scene.getBoundingClientRect();
+  const cRect = catEl.getBoundingClientRect();
+  const sx = cRect.left + cRect.width/2 - sRect.left;
+  const sy = cRect.bottom - 8 - sRect.top;
+  const tx = x - sRect.left, ty = y - sRect.top;
+  paw.style.transition = "none";
+  paw.style.opacity = "1";
+  paw.style.transform = `translate(${sx}px, ${sy}px) rotate(-30deg)`;
+  void paw.offsetWidth;
+  paw.style.transition = "transform .16s ease-in, opacity .18s ease-out";
+  paw.style.transform = `translate(${tx}px, ${ty}px) rotate(10deg)`;
+  setTimeout(()=>{ paw.style.opacity = "0"; }, 170);
+}
+
+/* ================= 倒计时 / 结束 ================= */
+function startGame(){
+  score = 0; timeLeft = 45; gameOver = false;
+  scoreEl.textContent = "0";
+  updateTimer();
+  overlay.classList.add("hidden");
+  fishes = [];
+  spawnToCapacity();
+  timerId = setInterval(()=>{
+    timeLeft--;
+    updateTimer();
+    if(timeLeft <= 0) endGame();
+  }, 1000);
+}
+
+function updateTimer(){
+  timerEl.textContent = "⏱ " + timeLeft;
+  timerEl.classList.toggle("low", timeLeft <= 10 && !gameOver);
+}
+
+function endGame(){
+  gameOver = true;
+  clearInterval(timerId); timerId = null;
+  // 所有鱼消失
+  fishes.forEach(f=>{ f.classList.add("caught"); setTimeout(()=>f.remove(), 230); });
+  fishes = [];
+  paw.style.opacity = "0";
+  endSound();
+  endSub.textContent = `你抓到了 ${score} 条鱼！`;
+  $("pauseCard").classList.add("hidden");
+  $("endCard").classList.remove("hidden");
+  overlay.classList.remove("hidden");
+}
+
+/* ================= 暂停逻辑 ================= */
+let isPaused = false;
+const pauseBtn = $("pauseBtn"), pauseCard = $("pauseCard"), resumeBtn = $("resumeBtn"), restartBtn = $("restartBtn");
+
+function pauseGame(){
+  if(gameOver || isPaused) return;
+  isPaused = true;
+  clearInterval(timerId); timerId = null;
+  $("endCard").classList.add("hidden");
+  pauseCard.classList.remove("hidden");
+  overlay.classList.remove("hidden");
+}
+
+function resumeGame(){
+  if(gameOver || !isPaused) return;
+  isPaused = false;
+  pauseCard.classList.add("hidden");
+  overlay.classList.add("hidden");
+  timerId = setInterval(()=>{
+    timeLeft--;
+    updateTimer();
+    if(timeLeft <= 0) endGame();
+  }, 1000);
+}
+
+pauseBtn.addEventListener("click", pauseGame);
+resumeBtn.addEventListener("click", resumeGame);
+restartBtn.addEventListener("click", ()=>{
+  isPaused = false;
+  pauseCard.classList.add("hidden");
+  startGame();
+});
+
+againBtn.addEventListener("click", ()=>{
+  $("endCard").classList.add("hidden");
+  startGame();
+});
+
+window.addEventListener("keydown", e=>{
+  if(e.key === "Escape" || e.key === " "){
+    e.preventDefault();
+    if(!gameOver){
+      if(isPaused) resumeGame();
+      else pauseGame();
+    }
+  }
+});
+
+/* ================= 启动 ================= */
+startGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/zcool-kuaile/index.css" rel="stylesheet">
+<title>喵喵点击器 🐱 猫猫跳跳</title>
+<style>
+:root{
+  --bg: #F3EDE8;
+  --bg-warm: #FAF4EE;
+  --pink: #D4A5A5;
+  --pink-deep: #B57E7E;
+  --pink-soft: #E8D5D5;
+  --green: #A3B899;
+  --green-deep: #708A66;
+  --green-soft: #C8D5C4;
+  --purple-bow: #9B8AA5;
+  --purple-deep: #786882;
+  --ink: #5E5252;
+  --ink-soft: #7D7070;
+  --paper: #FFFDF9;
+  --line: #D8CCC4;
+  --accent: #708A66;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"ZCOOL KuaiLe","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background: radial-gradient(circle at 50% 30%, #FFFDF9 0%, #FAF4EE 60%, #F1E7DF 100%);
+  color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;user-select:none;-webkit-user-select:none;
+}
+/* 背景漂浮爪印 */
+.paws{position:fixed;inset:0;pointer-events:none;opacity:.08;font-size:32px;overflow:hidden;z-index:0}
+.paws span{position:absolute;animation:drift linear infinite}
+@keyframes drift{
+  0%{transform:translateY(12vh) rotate(-14deg);opacity:0}
+  12%{opacity:.9}
+  85%{opacity:.5}
+  100%{transform:translateY(-110vh) rotate(16deg);opacity:0}
+}
+.app{position:relative;z-index:1;width:min(94vw,430px);display:flex;flex-direction:column;align-items:center;gap:4px}
+header{display:flex;align-items:center;gap:12px;margin-top:4px}
+header h1{font-size:22px;font-weight:900;letter-spacing:2px;color:var(--green-deep)}
+.title-tag{font-size:12px;color:var(--pink-deep);background:var(--paper);border:1.5px solid var(--pink-soft);padding:3px 12px;border-radius:999px;font-weight:700}
+.controls{display:flex;gap:8px}
+.ctrl-btn{
+  width:36px;height:36px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 0 #E2D7CF;transition:transform .08s, box-shadow .08s;color:var(--ink)
+}
+.ctrl-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #E2D7CF}
+/* 计数 */
+.score-wrap{text-align:center;margin-top:2px}
+.counter{
+  font-size:clamp(56px,16vw,80px);font-weight:900;line-height:1.05;color:var(--green-deep);
+  text-shadow:0 4px 0 rgba(112,138,102,.20), 0 8px 24px rgba(112,138,102,.18);
+  font-variant-numeric:tabular-nums
+}
+.counter.pop{animation:pop .28s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.22)}100%{transform:scale(1)}}
+.combo{
+  min-height:22px;font-size:14px;font-weight:800;color:var(--pink-deep);letter-spacing:1.5px;
+  opacity:0;transform:translateY(-4px);transition:.18s
+}
+.combo.show{opacity:1;transform:none}
+.combo b{color:#D45B74}
+/* 舞台 */
+.stage{position:relative;width:min(86vw,330px);height:300px;touch-action:manipulation}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:3}
+.cat-wrap{
+  position:absolute;inset:-10px 0 0 0;display:flex;align-items:flex-end;justify-content:center;
+  cursor:pointer;z-index:2
+}
+.cat{
+  width:220px;height:auto;
+  filter:drop-shadow(0 14px 22px rgba(107,94,94,.22));
+  transition:transform .08s;
+}
+.cat:active{transform:scale(.95)}
+.cat-wrap.jump .cat{animation:jump .46s cubic-bezier(.34,1.56,.64,1)}
+@keyframes jump{
+  0%  {transform:translateY(0) scale(1,1)}
+  30% {transform:translateY(-60px) scale(1.06,.92)}
+  55% {transform:translateY(-70px) scale(.97,1.07)}
+  82% {transform:translateY(-4px) scale(1.10,.86)}
+  100%{transform:translateY(0) scale(1,1)}
+}
+.cat-wrap.hovered .cat{animation:none;transform:translateY(-4px)}
+
+/* 里程碑横幅 */
+.banner{
+  position:absolute;top:4%;left:50%;transform:translateX(-50%) translateY(-22px);
+  opacity:0;transition:.32s cubic-bezier(.34,1.56,.64,1);z-index:4;pointer-events:none;
+  background:var(--paper);border:1.5px solid var(--pink-soft);border-radius:999px;padding:8px 22px;font-weight:900;font-size:14.5px;
+  color:var(--pink-deep);box-shadow:0 8px 24px rgba(181,126,126,.22);white-space:nowrap
+}
+.banner.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* 统计 */
+.stats{display:flex;gap:10px;margin-bottom:6px}
+.stat{
+  background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:6px 16px;
+  text-align:center;min-width:96px;box-shadow:0 3px 0 #E2D7CF
+}
+.stat span{display:block;font-size:11px;color:var(--ink-soft);font-weight:700;letter-spacing:1px}
+.stat b{font-size:18px;color:var(--green-deep)}
+hint{font-size:12px;color:var(--ink-soft);font-weight:600}
+/* 返回大厅手账书签 */
+.back-home-badge{
+  position:fixed;top:12px;left:12px;z-index:50;
+  background:var(--paper);border:1.5px solid var(--green-soft);border-radius:999px;
+  padding:5px 14px;font-size:13px;font-weight:800;color:var(--green-deep);
+  text-decoration:none;display:inline-flex;align-items:center;gap:5px;
+  box-shadow:0 3px 0 #D5DFD2;transition:transform .12s, box-shadow .12s;
+}
+.back-home-badge:hover{transform:translateY(-2px);box-shadow:0 5px 0 #D5DFD2}
+.back-home-badge:active{transform:translateY(1px);box-shadow:0 1px 0 #D5DFD2}
+</style>
+</head>
+<body>
+<a class="back-home-badge" href="index.html" title="返回猫猫游戏屋大厅">🐾 大厅</a>
+<div class="paws" id="paws"></div>
+
+<div class="app">
+  <header>
+    <h1>🐱 喵喵点击器</h1>
+    <div class="title-tag" id="titleTag">新手铲屎官</div>
+    <div class="controls">
+      <button class="ctrl-btn" id="soundBtn" title="音效开关">🔊</button>
+      <button class="ctrl-btn" id="resetBtn" title="重置计数">↺</button>
+    </div>
+  </header>
+
+  <div class="score-wrap">
+    <div class="counter" id="counter">0</div>
+    <div class="combo" id="combo"></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <canvas id="fx"></canvas>
+    <div class="banner" id="banner"></div>
+    <div class="cat-wrap" id="catWrap">
+      <!-- ============ 原版白猫 (紫色蝴蝶结 + 夸张长睫毛 + 星星眼) ============ -->
+      <svg class="cat" id="cat" viewBox="0 0 110 165" aria-label="原版白猫">
+        <!-- 尾巴 -->
+        <path d="M88,136 C108,134 114,120 110,105 C107,96 98,93 92,100" fill="none" stroke="#D1C3BE" stroke-width="6.5" stroke-linecap="round"/>
+        <!-- 身体与小脚 -->
+        <ellipse cx="55" cy="132" rx="36" ry="28" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="38" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <ellipse cx="72" cy="151" rx="9.5" ry="7" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <!-- 头部与猫耳 -->
+        <circle cx="55" cy="72" r="38" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5"/>
+        <path d="M30,52 L40,18 L62,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M80,52 L70,18 L48,38 Z" fill="#FFFDF9" stroke="#CFBEB8" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M36,46 L42,27 L56,39 Z" fill="#F4DFE4"/>
+        <path d="M74,46 L68,27 L54,39 Z" fill="#F4DFE4"/>
+        <!-- 紫色大蝴蝶结 + 珍珠中心 -->
+        <g transform="translate(55, 27)">
+          <path d="M-2,0 C-15,-8 -26,-3 -26,6 C-26,14 -13,10 -2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M2,0 C15,-8 26,-3 26,6 C26,14 13,10 2,0" fill="#9B8AA5" stroke="#786882" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle r="5.5" fill="#FFFDF9" stroke="#D4C4A8" stroke-width="1.8"/>
+          <circle cx="-1.5" cy="-1.5" r="1.5" fill="#FFF"/>
+        </g>
+        <!-- 灵动双眼与八角星辉 -->
+        <ellipse cx="40" cy="72" rx="10" ry="11" fill="#433B4A"/>
+        <ellipse cx="70" cy="72" rx="10" ry="11" fill="#433B4A"/>
+        <circle cx="43" cy="68" r="3.4" fill="#FFFDF9"/>
+        <circle cx="73" cy="68" r="3.4" fill="#FFFDF9"/>
+        <g style="transform-box:fill-box;transform-origin:center;animation:orbFloat 2.4s ease-in-out infinite;">
+          <polygon points="40,71 42,75 46,76 43,78 44,82 40,80 36,82 37,78 34,76 38,75" fill="#FDF3D8"/>
+          <polygon points="70,71 72,75 76,76 73,78 74,82 70,80 66,82 67,78 64,76 68,75" fill="#FDF3D8"/>
+        </g>
+        <!-- 夸张上翘浓密睫毛 -->
+        <path d="M30,65 Q33,54 26,49 M40,61 Q42,50 42,45 M49,66 Q52,56 57,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M80,65 Q77,54 84,49 M70,61 Q68,50 68,45 M61,66 Q58,56 53,51" stroke="#5E5252" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- 腮红、鼻吻与三瓣嘴 -->
+        <circle cx="26" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+        <circle cx="84" cy="88" r="7" fill="#F0CDD5" opacity="0.65"/>
+        <path d="M55,84 l4,4 l-8,0 Z" fill="#E8A6B6"/>
+        <path d="M48,90 q7,5 14,0" stroke="#CFBEB8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span>总点击</span><b id="total">0</b></div>
+    <div class="stat"><span>最高连击</span><b id="bestCombo">0</b></div>
+    <div class="stat"><span>成就</span><b id="achv">0 / 6</b></div>
+  </div>
+  <hint>点它！疯狂点！它只会更开心 😻</hint>
+</div>
+
+<script>
+"use strict";
+/* ================= 状态 ================= */
+const S = {
+  count: 0,        // 当前会话计数
+  total: 0,        // 累计计数（含历史）
+  combo: 0,
+  best: 0,
+  achv: new Set(),
+  sound: true,
+};
+const MILESTONES = [10, 50, 100, 250, 500, 1000];
+const ACHV_NAMES = ["小试身手","渐入佳境","资深铲屎官","猫语十级","喵界老友","猫之领主"];
+const TITLES = [
+  [0,"新手铲屎官"],[50,"撸猫学徒"],[100,"资深铲屎官"],[250,"猫语十级"],[500,"喵界老友"],[1000,"猫之领主 🐾"]
+];
+
+/* ================= 元素 ================= */
+const $ = id => document.getElementById(id);
+const stage = $("stage"), fx = $("fx"), ctx = fx.getContext("2d");
+const catWrap = $("catWrap"), cat = $("cat");
+const counter = $("counter"), comboEl = $("combo"), banner = $("banner");
+const totalEl = $("total"), bestEl = $("bestCombo"), achvEl = $("achv"), titleTag = $("titleTag");
+const soundBtn = $("soundBtn"), resetBtn = $("resetBtn");
+
+/* 加载存档 */
+try{
+  const d = JSON.parse(localStorage.getItem("cat-clicker") || "{}");
+  S.total = +d.total || 0;
+  S.best = +d.best || 0;
+  S.sound = d.sound !== false;
+  if (Array.isArray(d.achv)) S.achv = new Set(d.achv);
+}catch(e){}
+
+function save(){
+  try{
+    localStorage.setItem("cat-clicker", JSON.stringify({
+      total: S.total, best: S.best, sound: S.sound, achv: [...S.achv]
+    }));
+  }catch(e){ /* 个别浏览器在 file:// 直开时禁用存储，忽略即可，游戏仍可玩 */ }
+}
+
+/* ================= 粒子系统 ================= */
+const P = [];
+let raf = null;
+function loop(){
+  const t = performance.now() / 1000;
+  ctx.clearRect(0,0,fx.width,fx.height);
+  for(let i=P.length-1;i>=0;i--){
+    const p = P[i];
+    p.age += 1/60;
+    if(p.age >= p.life){ P.splice(i,1); continue; }
+    const k = p.age / p.life;
+    switch(p.kind){
+      case "txt":{
+        p.y += p.vy/60; p.x += (Math.sin(t*6+p.seed)*0.5);
+        ctx.globalAlpha = 1-k;
+        ctx.font = `800 ${p.size}px "PingFang SC","Microsoft YaHei",sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillStyle = p.color;
+        ctx.fillText(p.text, p.x, p.y);
+        break;
+      }
+      case "dot":{
+        p.vy += p.gravity/60; p.x += p.vx/60; p.y += p.vy/60;
+        ctx.globalAlpha = 1-k;
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.size*(1-k*0.6),0,6.283); ctx.fill();
+        break;
+      }
+      case "ring":{
+        const r = p.size + 140*k;
+        ctx.globalAlpha = (1-k)*0.7;
+        ctx.strokeStyle = p.color; ctx.lineWidth = 4*(1-k)+1;
+        ctx.beginPath(); ctx.arc(p.x,p.y,r,0,6.283); ctx.stroke();
+        break;
+      }
+      case "emoji":{
+        p.y += p.vy/60; p.x += Math.sin(t*4+p.seed)*0.8;
+        ctx.globalAlpha = 1-k;
+        ctx.font = `${p.size}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.fillText(p.text, p.x, p.y);
+        break;
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+  if(P.length) raf = requestAnimationFrame(loop); else raf = null;
+}
+function kick(){ if(!raf) raf = requestAnimationFrame(loop); }
+function stageXY(e){
+  const r = stage.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+function burst(x,y,text,color){
+  P.push({kind:"txt",x,y,vy:-85,age:0,life:.9,text,color,size:26,seed:Math.random()*6});
+  P.push({kind:"txt",x,y:y-8,vy:-120,age:0,life:.8,text:"+1",color:"#708A66",size:22,seed:Math.random()*6});
+  if(S.combo>=3){
+    P.push({kind:"emoji",x:x+(Math.random()*40-20),y,vy:-60,age:0,life:1,text:"✨",size:20,seed:Math.random()*6});
+  }
+  kick();
+}
+function confetti(){
+  const cx = stage.clientWidth/2, cy = 150;
+  const colors = ["#708A66","#D4A5A5","#9B8AA5","#C8D5C4","#B57E7E","#E8D5D5"];
+  for(let i=0;i<70;i++){
+    const a = Math.random()*6.283, sp = 60+Math.random()*240;
+    P.push({kind:"dot",x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-60,
+      gravity:260,age:0,life:1.3,size:3+Math.random()*4.5,color:colors[i%colors.length]});
+  }
+  P.push({kind:"ring",x:cx,y:cy,age:0,life:.7,size:10,color:"#708A66"});
+  P.push({kind:"ring",x:cx,y:cy,age:0,life:.9,size:24,color:"#D4A5A5"});
+  // 飘爱心与星花
+  for(let i=0;i<6;i++){
+    P.push({kind:"emoji",x:cx+(Math.random()*160-80),y:cy+20,vy:-40-Math.random()*50,
+      age:0,life:1.4,text:["🌸","💖","✨"][i%3],size:16+Math.random()*8,seed:Math.random()*6});
+  }
+  kick();
+}
+
+/* ================= 音效（合成喵叫，无外部文件） ================= */
+let AC = null;
+function ensureAC(){ if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)(); return AC; }
+function meow(pitch=1){
+  if(!S.sound) return;
+  try{
+    const a = ensureAC();
+    if(a.state === "suspended") a.resume();
+    const t = a.currentTime;
+    // 起音："喵" 的高频滑落
+    const o1 = a.createOscillator(); o1.type = "sine";
+    o1.frequency.setValueAtTime((500+Math.random()*70)*pitch, t);
+    o1.frequency.exponentialRampToValueAtTime(250*pitch, t+0.11);
+    const g1 = a.createGain();
+    g1.gain.setValueAtTime(0.0001, t);
+    g1.gain.exponentialRampToValueAtTime(0.45, t+0.02);
+    g1.gain.exponentialRampToValueAtTime(0.0001, t+0.16);
+    o1.connect(g1).connect(a.destination);
+    o1.start(t); o1.stop(t+0.18);
+    // 泛音增色
+    const o2 = a.createOscillator(); o2.type = "triangle";
+    o2.frequency.setValueAtTime((880+Math.random()*60)*pitch, t);
+    o2.frequency.exponentialRampToValueAtTime(420*pitch, t+0.09);
+    const g2 = a.createGain();
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(0.12, t+0.02);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t+0.12);
+    o2.connect(g2).connect(a.destination);
+    o2.start(t); o2.stop(t+0.13);
+  }catch(e){}
+}
+function chime(){
+  if(!S.sound) return;
+  try{
+    const a = ensureAC(); const t = a.currentTime;
+    [523.25, 659.25, 783.99, 1046.5].forEach((f,i)=>{
+      const o = a.createOscillator(); o.type = "sine"; o.frequency.value = f;
+      const g = a.createGain();
+      g.gain.setValueAtTime(0.0001, t+i*0.08);
+      g.gain.exponentialRampToValueAtTime(0.25, t+i*0.08+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+i*0.08+0.5);
+      o.connect(g).connect(a.destination);
+      o.start(t+i*0.08); o.stop(t+i*0.08+0.55);
+    });
+  }catch(e){}
+}
+
+/* ================= 表情 / 称号 ================= */
+const FACES = ["faceNormal","faceHappy","faceLove","faceStar","faceDizzy"];
+function setFace(level){
+  FACES.forEach((id,i)=>{ 
+    const el = $(id);
+    if(el) el.style.display = i===level ? "" : "none"; 
+  });
+  const dizzy = level === 4;
+  cat.classList.toggle("dizzy-head", dizzy);
+  if(dizzy){ // 头顶冒泡泡
+    const cx = stage.clientWidth/2;
+    P.push({kind:"emoji",x:cx+(Math.random()*80-40),y:120,vy:-50,age:0,life:1.2,
+      text:["💫","✨","🌟"][Math.floor(Math.random()*3)],size:18,seed:Math.random()*6});
+    kick();
+  }
+}
+function setTitle(){
+  let t = TITLES[0][1];
+  for(const [n,title] of TITLES){ if(S.total>=n) t = title; }
+  titleTag.textContent = t;
+}
+function refreshUI(){
+  counter.textContent = S.count;
+  totalEl.textContent = S.total;
+  bestEl.textContent = S.best;
+  achvEl.textContent = `${S.achv.size} / ${MILESTONES.length}`;
+  setTitle();
+}
+function showBanner(txt){
+  banner.textContent = txt;
+  banner.classList.add("show");
+  clearTimeout(showBanner._t);
+  showBanner._t = setTimeout(()=>banner.classList.remove("show"), 1900);
+}
+
+/* ================= 点击 ================= */
+function poke(e){
+  const {x,y} = stageXY(e);
+  S.count++; S.total++;
+  S.combo++;
+  if(S.combo > S.best){ S.best = S.combo; }
+  meow(1 + Math.min(S.combo,12)*0.04);
+
+  // 跳跃动画
+  catWrap.classList.remove("jump");
+  void catWrap.offsetWidth;          // 强制重排，让动画可重播
+  catWrap.classList.add("jump");
+
+  // 计数弹跳
+  counter.classList.remove("pop");
+  void counter.offsetWidth;
+  counter.classList.add("pop");
+  refreshUI();
+
+  // 飘字
+  burst(x,y,"喵~ 🐾", "#708A66");
+
+  // 连击显示
+  if(S.combo >= 2){
+    comboEl.innerHTML = S.combo >= 10 ? `连击 <b>×${S.combo}</b> 🔥` : `连击 <b>×${S.combo}</b>`;
+    comboEl.classList.add("show");
+  }
+  clearTimeout(poke._t);
+  poke._t = setTimeout(()=>{ comboEl.classList.remove("show"); S.combo = 0; }, 1500);
+
+  // 表情
+  const lv = S.total < 10 ? 0 : S.total < 50 ? 1 : S.total < 250 ? 2 : S.total < 600 ? 3 : 4;
+  setFace(lv);
+
+  // 里程碑
+  if(MILESTONES.includes(S.total) && !S.achv.has(S.total)){
+    S.achv.add(S.total);
+    confetti();
+    chime();
+    const name = ACHV_NAMES[MILESTONES.indexOf(S.total)];
+    showBanner(`🎉 达成成就「${name}」· ${S.total} 次！`);
+    achvEl.textContent = `${S.achv.size} / ${MILESTONES.length}`;
+  }
+  save();
+}
+
+catWrap.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  poke(e);
+});
+catWrap.addEventListener("mouseenter", ()=>catWrap.classList.add("hovered"));
+catWrap.addEventListener("mouseleave", ()=>catWrap.classList.remove("hovered"));
+
+/* ================= 按钮 ================= */
+soundBtn.addEventListener("click", ()=>{
+  S.sound = !S.sound;
+  soundBtn.textContent = S.sound ? "🔊" : "🔇";
+  save();
+  if(S.sound) meow();
+});
+resetBtn.addEventListener("click", ()=>{
+  if(resetBtn.dataset.arm){
+    S.total = 0; S.best = 0; S.achv.clear(); S.count = 0;
+    save(); refreshUI(); setFace(0);
+    showBanner("已重置，从头开始撸！");
+    resetBtn.dataset.arm = ""; resetBtn.textContent = "↺";
+    return;
+  }
+  resetBtn.dataset.arm = "1"; resetBtn.textContent = "确认？";
+  setTimeout(()=>{ resetBtn.dataset.arm = ""; resetBtn.textContent = "↺"; }, 2200);
+});
+
+/* ================= Canvas 尺寸 ================= */
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  const r = stage.getBoundingClientRect();
+  fx.width = r.width * dpr; fx.height = r.height * dpr;
+  fx.style.width = r.width+"px"; fx.style.height = r.height+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener("resize", resize);
+resize();
+
+/* ================= 背景猫爪 ================= */
+(function(){
+  const paws = $("paws");
+  const emo = ["🐾","🐾","🐾","🐱"];
+  for(let i=0;i<16;i++){
+    const s = document.createElement("span");
+    s.textContent = emo[i % emo.length];
+    s.style.left = Math.random()*100+"vw";
+    s.style.top = Math.random()*100+"vh";
+    s.style.animationDuration = (14+Math.random()*18)+"s";
+    s.style.animationDelay = (Math.random()*14)+"s";
+    s.style.fontSize = (18+Math.random()*22)+"px";
+    paws.appendChild(s);
+  }
+})();
+
+/* ================= 初始化 ================= */
+S.count = 0;
+S.combo = 0;
+soundBtn.textContent = S.sound ? "🔊" : "🔇";
+setFace(0);
+refreshUI();
+</script>
+</body>
+</html>
